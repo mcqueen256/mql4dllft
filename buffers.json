@@ -1,0 +1,26 @@
+{
+	"ObjectName1": {
+		"description": "buffer descriptoin...",
+		"style": "SOLID",
+		"witdh": 2,
+		"color": "FF0000",
+		"label": "Buffer 1",
+		"arrow": null,
+		"level style": null,
+		"level witdh": null,
+		"level color": null,
+	},
+	"ObjectName2": {
+		"description": "A very simple buffer",
+		"style": "SOLID",
+		"color": "FFF",
+		"label": "Buffer 2",
+	},
+	"Arrow": {
+		"description": "Arrow example",
+		"style": "ARROW",
+		"color": "FFDF00",
+		"label": "Trend Guess",
+		"arrow": 204,
+	}
+}

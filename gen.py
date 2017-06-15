@@ -8,7 +8,8 @@ def main():
   """Steps in generating the API:
   1. Download the MQL4 API
   2. Decode the Websites into function representation objects (FROs)
-  3. Perform one or more 'optional'
+  3. Load/decode buffer objects from file
+  4. Generate selected output
 
   Optionals:
     - Generate code for a new Indicator
