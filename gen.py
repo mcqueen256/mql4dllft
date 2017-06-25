@@ -82,6 +82,12 @@ def decode_buffers():
 def generate_output():
   pass
 
+def generate_indicator():
+  pass
+
+def generate_expert():
+  pass
+
 
 
 
