@@ -1,5 +1,5 @@
-from MQLFunction import MQLFunction
-from param_decoder import param_decoders
+from .MQLFunction import MQLFunction
+from .param_decoder import param_decoders
 from bs4.element import Tag
 import logging
 
@@ -7,6 +7,7 @@ def get_function_comment(tag):
   # set comment
   p = tag
   return p.span.string
+  
 def pull_apart_code_example(tag):
   # pull apart code group
   p = tag.table.tr.td.p

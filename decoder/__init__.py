@@ -1,14 +1,14 @@
-from MQLFunction import MQLFunction
+from .MQLFunction import MQLFunction
 from typing import List
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 import os
 import click
-from page_decoder import page_decode_normal
+from .page_decoder import page_decode_normal
 
 
-def decode() -> List[MQLFunction]:
+def decode_functions() -> List[MQLFunction]:
   '''Returns a list of the code signatures for every function in the API.'''
   # Get the file list
   try:
@@ -46,9 +46,9 @@ def get_mql_function(html, filename):
     if '.'.join(tag_names).startswith('h1.p.div.p'): f = page_decode_normal(tags)
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.div.p'): pass # print('process double code block', filename)
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.p.p.p.p.br'): pass # getlasterror
-    f._filename = filename
+    #TODO: throw error for none instances
+    if f is not None: f._filename = filename
     return f
 
-
-if __name__ == '__main__':
-  decode()
+def decode_buffers():
+  pass
