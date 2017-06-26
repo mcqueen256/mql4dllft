@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 import os
 import click
+from page_decoder import page_decode_normal
 
 
 def decode() -> List[MQLFunction]:
@@ -45,9 +46,8 @@ def get_mql_function(html, filename):
     if '.'.join(tag_names).startswith('h1.p.div.p'): f = page_decode_normal(tags)
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.div.p'): pass # print('process double code block', filename)
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.p.p.p.p.br'): pass # getlasterror
+    f._filename = filename
     return f
-
-def page_decode_normal(tags): pass
 
 
 if __name__ == '__main__':

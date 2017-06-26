@@ -9,6 +9,7 @@ class MQLFunction:
         self._return_comment = ''
         self._note = ''
         self._namespace = None
+        self._filename = None
 
     def __repr__(self) -> str:
         """Print a neat representation of the MQLFunction"""
