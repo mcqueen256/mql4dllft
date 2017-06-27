@@ -8,15 +8,13 @@ import urllib.request
 import click
 from bs4 import BeautifulSoup
 from bs4.element import Tag
-from decoder import decode_functions, decode_buffers
 import logging
 import core 
 
 @click.group(invoke_without_command=True)
 @click.option('--verbos', is_flag=True, help='Turn on verbos output (show all the details).')
 @click.option('--debug', is_flag=True, help='Turn on debugging output.')
-@click.pass_context
-def cli(ctx, verbos, debug):
+def cli(verbos, debug):
   """Steps in generating the API:
 
   \n\t1. Download the MQL4 API
@@ -37,7 +35,7 @@ def cli(ctx, verbos, debug):
   if debug:
     level = logging.DEBUG
   logging.basicConfig(filename='example.log',level=level)
-  core.init(ctx)
+  core.init()
 
 @cli.command('download-api')
 @click.pass_context
@@ -81,7 +79,7 @@ def download_api(ctx):
       with open('api/' + name + '.html', 'w') as file:
         file.write(page)
         if ctx.obj['DEBUG']: click.echo("Written to: " + 'api/' + name + '.html')
-  pass
+  return
 
 
 @cli.command('--gen-buffer', help="Generate code for MQL4 buffers.")
@@ -94,10 +92,10 @@ def decode_buffers():
 def decode_ft():
   pass
 
-@cli.command('--gen-code', help="Generate all the code.")
+@cli.command('gen-code', help="Generate all the code.")
 @click.pass_context
-def generate_output():
-  pass
+def generate_output(ctx):
+  core.generate_all()
 
 if __name__ == '__main__':
   cli(obj={})

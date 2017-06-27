@@ -2,7 +2,7 @@
 	"ObjectName1": {
 		"description": "buffer descriptoin...",
 		"style": "SOLID",
-		"witdh": 2,
+		"width": 2,
 		"color": "FF0000",
 		"label": "Buffer 1",
 		"arrow": null,

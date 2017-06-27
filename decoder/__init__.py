@@ -6,6 +6,7 @@ from bs4.element import Tag
 import os
 import click
 from .page_decoder import page_decode_normal
+import logging
 
 
 def decode_functions() -> List[MQLFunction]:
@@ -19,6 +20,7 @@ def decode_functions() -> List[MQLFunction]:
 
   # process the files
   functions = []
+  click.echo("Analysing html files...")
   for filename in tqdm(file_list):
     # only want to process html files
     if not filename.endswith('.html'): continue
@@ -47,8 +49,9 @@ def get_mql_function(html, filename):
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.div.p'): pass # print('process double code block', filename)
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.p.p.p.p.br'): pass # getlasterror
     #TODO: throw error for none instances
-    if f is not None: f._filename = filename
+    if f is not None: f._namespace = filename
+    logging.info(filename)
     return f
 
 def decode_buffers():
-  pass
+  return None
