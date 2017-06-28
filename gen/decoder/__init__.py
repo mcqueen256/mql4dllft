@@ -57,3 +57,7 @@ def get_mql_function(html, filename):
 def decode_buffers():
   with open('buffers.json', 'r') as fin:
     return json.loads(fin.read())['buffers']
+
+def decode_properties():
+  with open('properties.json', 'r') as fin:
+    return json.loads(fin.read())

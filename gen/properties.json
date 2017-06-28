@@ -1,8 +1,11 @@
 {
+	"name":"NBRobot",
 	"indicator": {
 		"copyright": "Copyright 2017, Nicholas Buckeridge.",
 		"link": "https://mcqueen256.com/",
 		"version": "1.00",
-		"strict": null
+		"strict": null,
+		"indicator_chart_window": true,
+		"indicator_separate_window": false
 	}
 }

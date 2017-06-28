@@ -1,4 +1,4 @@
-from decoder import decode_functions, decode_buffers
+from decoder import decode_functions, decode_buffers, decode_properties
 from jinja2 import Template
 
 context = {}
@@ -12,6 +12,15 @@ def require_buffers(func, *args, **kwargs):
     global context
     if 'buffers' not in context.keys():
       context['buffers'] = decode_buffers()
+    return func(*args, **kwargs)
+  return inner
+
+def require_properties(func, *args, **kwargs):
+  """Decorator for ensuring that the MQL properties are in the context."""
+  def inner(*args, **kwargs):
+    global context
+    if 'properties' not in context.keys():
+      context['properties'] = decode_properties()
     return func(*args, **kwargs)
   return inner
 
@@ -47,11 +56,25 @@ def generate_dll_ft(): pass
 
 #@require_functions
 @require_buffers
+@require_properties
 @require_context
 def generate_all(ctx):
-  # Prepear buffer lines 
-  ctx_buffers = ctx['buffers']
-  buffers = []
+  # expert data
+  class ExpertContext:
+    def __init__(self, name):
+      self.property_buffers = []
+      self.property_lines = []
+      self.name = name
+      self.input_lines = []
+
+  # Contexts
+  expert_ctx = ExpertContext(ctx['properties']['name'])
+
+  # Prepare properties lines
+  #for 
+  #expert_ctx.properties = ctx['properties']['indicator']
+
+  # Prepear property buffer lines
   for i, buffer in enumerate(ctx['buffers']):
     lines = []
     for key in buffer.keys():
@@ -60,7 +83,7 @@ def generate_all(ctx):
       if val is None: continue
       if key.endswith('color'):
         pass # do nothing to val
-      if key.endswith('style'):
+      elif key.endswith('style'):
         val = 'STYLE_' + val.upper()
       elif type(val) is str:
         val = '"{}"'.format(val)
@@ -68,11 +91,16 @@ def generate_all(ctx):
       prop ='_'.join(key.split())
       line = "#property indicator_{}{} {}".format(prop, i+1, val)
       lines.append(line)
-    buffers.append(lines)
+    expert_ctx.property_buffers.append(lines)
+
+  # Prepear property buffer C registers
+  # Prepare input lines
+  # Prepare DLL import lines
+
 
   # Write from template
   with open('templates/Indicator.cpp', 'r') as fin:
     template = Template(fin.read())
-    code = template.render(buffers=buffers)
+    code = template.render(ctx=expert_ctx)
     print(code)
   return
