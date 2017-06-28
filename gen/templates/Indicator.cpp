@@ -15,10 +15,11 @@
 int robot_instance;
 
 /* DLL Functions ----------------------------------------------------------- */
-#import "{{ name }}.dll"
+#import "{{ ctx.name }}.dll"
 int initialise(int instance);
 void deinitialise(int instance)
 #import
+
 
 /* Buffer Definitions ------------------------------------------------------ */
 #define BUFFER_COUNT {{ ctx.property_buffers | length }}
