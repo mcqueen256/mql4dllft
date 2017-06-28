@@ -7,6 +7,7 @@ import os
 import click
 from .page_decoder import page_decode_normal
 import logging
+import json
 
 
 def decode_functions() -> List[MQLFunction]:
@@ -54,4 +55,5 @@ def get_mql_function(html, filename):
     return f
 
 def decode_buffers():
-  return None
+  with open('buffers.json', 'r') as fin:
+    return json.loads(fin.read())['buffers']

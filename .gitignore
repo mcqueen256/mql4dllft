@@ -35,3 +35,4 @@
 venv/
 api/
 __pycashe__/
+example.log

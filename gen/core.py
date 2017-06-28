@@ -1,4 +1,5 @@
 from decoder import decode_functions, decode_buffers
+from jinja2 import Template
 
 context = {}
 
@@ -44,9 +45,34 @@ def generate_dll_buffers(): pass
 def generate_mql_ft(): pass
 def generate_dll_ft(): pass
 
-@require_functions
+#@require_functions
 @require_buffers
 @require_context
 def generate_all(ctx):
-  
-  pass
+  # Prepear 
+  ctx_buffers = ctx['buffers']
+  buffers = []
+  for i, buffer in enumerate(ctx['buffers']):
+    lines = []
+    for key in buffer.keys():
+      val = buffer[key]
+      # special conditions
+      if val is None: continue
+      if key.endswith('color'):
+        pass # do nothing to val
+      if key.endswith('style'):
+        val = 'STYLE_' + val.upper()
+      elif type(val) is str:
+        val = '"{}"'.format(val)
+      #generate the line
+      prop ='_'.join(key.split())
+      line = "#property indicator_{}{} {}".format(prop, i+1, val)
+      lines.append(line)
+    buffers.append(lines)
+
+  # Write from template
+  with open('templates/Indicator.cpp', 'r') as fin:
+    template = Template(fin.read())
+    code = template.render(buffers=buffers)
+    print(code)
+  return
