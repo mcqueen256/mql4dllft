@@ -49,7 +49,7 @@ def generate_dll_ft(): pass
 @require_buffers
 @require_context
 def generate_all(ctx):
-  # Prepear 
+  # Prepear buffer lines 
   ctx_buffers = ctx['buffers']
   buffers = []
   for i, buffer in enumerate(ctx['buffers']):
