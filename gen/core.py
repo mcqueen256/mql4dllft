@@ -6,6 +6,8 @@ context = {}
 def init():
   global context
 
+# Decorators ##################################################################
+
 def require_buffers(func, *args, **kwargs):
   """Decorator for ensuring that the MQL buffer is in the context."""
   def inner(*args, **kwargs):
@@ -40,41 +42,41 @@ def require_context(func, *args, **kwargs):
     return func(context, *args, **kwargs)
   return f
 
-@require_functions
-@require_buffers
-@require_context
-def generate_mlq_expert(ctx):
-  """Generates the full MQL4 code for the expert"""
-  pass
-def generate_mlq_indicator(): pass
-def generate_dll_expert(): pass
-def generate_dll_indicator(): pass
-def generate_mql_buffers(): pass
-def generate_dll_buffers(): pass
-def generate_mql_ft(): pass
-def generate_dll_ft(): pass
+# Utility #####################################################################
+class ExpertContext:
+  """Class to be passed to the template"""
+  def __init__(self, name):
+    self.property_buffers = []
+    self.property_lines = []
+    self.name = name
+    self.input_lines = []
 
-#@require_functions
-@require_buffers
 @require_properties
 @require_context
-def generate_all(ctx):
-  # expert data
-  class ExpertContext:
-    def __init__(self, name):
-      self.property_buffers = []
-      self.property_lines = []
-      self.name = name
-      self.input_lines = []
-
-  # Contexts
-  expert_ctx = ExpertContext(ctx['properties']['name'])
-
+def get_property_c_lines(ctx, category):
   # Prepare properties lines
-  #for 
-  #expert_ctx.properties = ctx['properties']['indicator']
+  property_lines = []
+  for key, val in ctx['properties'][category].items():
+    prop = '_'.join(key.split())
+    if val is not None:
+      prop += ' ' + str(val)
+    line = '#property {}'.format(prop)
+    property_lines.append(line)
+  return property_lines
 
-  # Prepear property buffer lines
+def get_common_property_c_lines():
+  return get_property_c_lines('common')
+
+def get_indicator_property_c_lines():
+  return get_property_c_lines('indicator')
+
+def get_expert_property_c_lines():
+  return get_property_c_lines('expert')
+
+@require_buffers
+@require_context
+def get_buffer_property_c_lines(ctx):
+  property_buffers = []
   for i, buffer in enumerate(ctx['buffers']):
     lines = []
     for key in buffer.keys():
@@ -88,13 +90,43 @@ def generate_all(ctx):
       elif type(val) is str:
         val = '"{}"'.format(val)
       #generate the line
-      prop ='_'.join(key.split())
+      prop = '_'.join(key.split())
       line = "#property indicator_{}{} {}".format(prop, i+1, val)
       lines.append(line)
-    expert_ctx.property_buffers.append(lines)
+    property_buffers.append(lines)
+  return property_buffers
 
+@require_properties
+@require_context
+def get_input_c_lines(ctx):
+  return ctx['properties']['inputs']
+
+# Actionable code #############################################################
+
+@require_functions
+@require_buffers
+@require_context
+def generate_mlq_expert(ctx):
+  """Generates the full MQL4 code for the expert"""
+  pass
+
+@require_buffers
+@require_properties
+@require_context
+def generate_mlq_indicator(ctx):
+  # expert data
+  
+
+  # Contexts
+  expert_ctx = ExpertContext(ctx['properties']['name'])
+
+  # Prepare properties lines
+  expert_ctx.property_lines = get_common_property_c_lines()
+  # Prepear property buffer lines
+  expert_ctx.property_buffers = get_buffer_property_c_lines()
   # Prepear property buffer C registers
   # Prepare input lines
+  expert_ctx.input_lines = get_input_c_lines()
   # Prepare DLL import lines
 
 
@@ -102,5 +134,20 @@ def generate_all(ctx):
   with open('templates/Indicator.cpp', 'r') as fin:
     template = Template(fin.read())
     code = template.render(ctx=expert_ctx)
-    print(code)
+  return code
+
+def generate_dll_expert(): pass
+def generate_dll_indicator(): pass
+def generate_mql_buffers(): pass
+def generate_dll_buffers(): pass
+def generate_mql_ft(): pass
+def generate_dll_ft(): pass
+
+#@require_functions
+@require_buffers
+@require_properties
+@require_context
+def generate_all(ctx):
+  code = generate_mlq_indicator()
+  print(code)
   return

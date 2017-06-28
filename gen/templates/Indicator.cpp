@@ -1,17 +1,16 @@
 /* MT4 Properties ---------------------------------------------------------- */
-{% for line in properties %}
-{{ line }}{% endfor %}
+{% for line in ctx.property_lines %}{{ line }}
+{% endfor %}
 
 /* Indicator Properties ---------------------------------------------------- */
 #property indicator_buffers {{ ctx.property_buffers | length }}
-{% for buffer in ctx.property_buffers %}{% for line in buffer %}
-{{ line }}{% endfor %}{% endfor %}
+{% for buffer in ctx.property_buffers %}{% for line in buffer %}{{ line }}
+{% endfor %}{% endfor %}
 
 
 /* Inputs ------------------------------------------------------------------ */
-input int number;
-{% for line in inputs %}
-{{ line }}{% endfor %}
+{% for line in ctx.input_lines %}input {{ line }};
+{% endfor %}
 
 
 /* Globals ----------------------------------------------------------------- */
