@@ -5,7 +5,7 @@
 			"description": "buffer descriptoin...",
 			"style": "SOLID",
 			"width": 2,
-			"color": "FF0000",
+			"color": "0xFF0000",
 			"label": "Buffer 1",
 			"arrow": null,
 			"level style": null,
@@ -16,14 +16,14 @@
 			"name": "Object Name 2",
 			"description": "A very simple buffer",
 			"style": "SOLID",
-			"color": "FFF",
+			"color": "0xFFFFFF",
 			"label": "Buffer 2"
 		},
 		{
 			"name": "Arrow",
 			"description": "Arrow example",
 			"style": "ARROW",
-			"color": "FFDF00",
+			"color": "0xFFDF00",
 			"label": "Trend Guess",
 			"arrow": 204
 		}

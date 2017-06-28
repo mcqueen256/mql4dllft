@@ -7,11 +7,9 @@
 {% for buffer in ctx.property_buffers %}{% for line in buffer %}{{ line }}
 {% endfor %}{% endfor %}
 
-
 /* Inputs ------------------------------------------------------------------ */
 {% for line in ctx.input_lines %}input {{ line }};
 {% endfor %}
-
 
 /* Globals ----------------------------------------------------------------- */
 int robot_instance;
@@ -24,9 +22,8 @@ void deinitialise(int instance)
 
 /* Buffer Definitions ------------------------------------------------------ */
 #define BUFFER_COUNT {{ ctx.property_buffers | length }}
-#define TestIndicator 0
-
-double BufferTest[];
+{% for line in ctx.buffer_name_lines %}{{ line }}
+{% endfor %}
 
 /* Initialisation ---------------------------------------------------------- */
 int OnInit() {
@@ -34,7 +31,8 @@ int OnInit() {
 	robot_instance = initialise(number);
 
 	/* Setup display buffers */
-	SetIndexBuffer(TestIndicator, BufferTest);
+	{% for line in ctx.buffer_register_lines %}{{ line }}
+	{% endfor %}
 	return(INIT_SUCCEEDED);
 }
 
