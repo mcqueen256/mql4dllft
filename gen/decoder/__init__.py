@@ -8,6 +8,7 @@ import click
 from .page_decoder import page_decode_normal
 import logging
 import json
+import core
 
 
 def decode_functions() -> List[MQLFunction]:
@@ -27,8 +28,35 @@ def decode_functions() -> List[MQLFunction]:
     if not filename.endswith('.html'): continue
     with open('api/' + filename, 'r') as file:
       function = get_mql_function(file.read(), filename)
+      # TODO: will need to remove next line some time
+      if function is None: continue
 
-      functions.append(function)
+      # check if the function needs to be duplicated to match variable parameters
+      need_dupping = False
+      dups = []
+      for t, n, d, c in function.getParameters():
+        # looking for (None, '...', None, None)
+        if t is None and d is None and c is None and n == '...':
+          need_dupping = True
+          continue
+        if need_dupping:
+          param = t, n, d, c
+          dups.append(param)
+      # if in need of duplication, do it now
+      if need_dupping:
+        bear_params = function.getParameters()[:-(len(dups) * 2 + 1)]
+        for maximum in range(1, core.settings["DUP_LEVEL"] + 1):
+          f = function.copy()
+          params = bear_params[:]
+          for i in range(1, maximum + 1):
+            for t, n, d, c in dups:
+              n = n[::-1].replace('N', str(i), 1)[::-1]
+              param = t, n, d, c
+              params.append(param)
+          f.setParameters(params)
+          functions.append(f)
+      else:
+        functions.append(function)
   return functions
 
 def get_mql_function(html, filename):

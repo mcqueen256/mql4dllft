@@ -4,9 +4,12 @@ from jinja2 import Template
 import logging
 
 context = {}
+settings = {
+  'DUP_LEVEL': 5
+}
 
 def init(debug=False, verbos=False):
-  global context
+  global context, settings
 
   # Configure logging
   level = logging.NOTSET
@@ -202,12 +205,17 @@ def generate_dll_ft(): pass
 def generate_mql_functions(ctx):
   code = ""
   functions = ctx["functions"]
-  print(functions)
+  func_dict_by_namespace = {}
+  for function in functions:
+    if function is not None:
+      if function.getNamespace() not in func_dict_by_namespace.keys():
+        func_dict_by_namespace[function.getNamespace()] = []
+      func_dict_by_namespace[function.getNamespace()].append(function)
 
   # Write from template
   with open('templates/MQLFunctions.cpp', 'r') as fin:
     template = Template(fin.read())
-    code = template.render(functions=functions)
+    code = template.render(func_dict_by_namespace=func_dict_by_namespace)
   return code
 
 def generate_all():

@@ -80,3 +80,33 @@ class MQLFunction:
   def setNamespace(self, newNamespace):
     """Sets the namespace/category of the function."""
     self._namespace = newNamespace
+
+  def getParameterLine(self) -> str:
+    """Returns C++ code for the parameters."""
+    def form_param(param):
+      t, n, d, c = param
+      try:
+        t.replace('string', 'char*')
+      except AttributeError as e:
+        print(self._parameters)
+        print(self)
+        raise e
+      
+      if d is None:
+        return '{} {}'.format(t, n)
+      else:
+        return '{} {} = {}'.format(t, n, d)
+    params = [ form_param(param) for param in self._parameters ]
+    return ', '.join(params)
+
+  def copy(self):
+    """Create a unique copy based of this parameter."""
+    function = MQLFunction()
+    function._return_type = self._return_type
+    function._name = self._name
+    function._parameters = self._parameters[:]
+    function._comment = self._comment
+    function._return_comment = self._return_comment
+    function._note = self._note
+    function._namespace = self._namespace
+    return function

@@ -1,6 +1,12 @@
 namespace mql4 {
-	{% for function in functions %}{% if function is not none %}
-	{{ function._return_type }} {{ function.getName() }}();
-	{{function}}
-	{% endif %}{% endfor %}
+	{% for namespace in func_dict_by_namespace.keys() %}
+		namespace {{ namespace }} {
+			{% for function in func_dict_by_namespace[namespace] %}
+			{{ function.getReturnType() }} {{ function.getName() }}({{ function.getParameterLine() }}) {
+
+			}
+			{% endfor %}
+		}
+	{% endfor %}
+	
 }
