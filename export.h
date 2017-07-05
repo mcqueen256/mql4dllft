@@ -4,6 +4,20 @@
 #include <iostream>
 #include <fstream>
 
+#include "Instance.hpp"
+#include "Robot.hpp"
+
+#if defined(__BORLANDC__)
+    typedef unsigned char uint8_t;
+    typedef __int64 int64_t;
+    typedef unsigned long uintptr_t;
+#elif defined(_MSC_VER)
+    typedef unsigned char uint8_t;
+    typedef __int64 int64_t;
+#else
+    #include <stdint.h>
+#endif
+
 /* Macros ------------------------------------------------------------------- */
 #ifdef NDEBUG
 #define MT4_API __declspec(dllexport)
@@ -22,7 +36,10 @@ void dllmain() {
 
 /* DLL Exported Functions --------------------------------------------------- */
 extern "C" {
-	MT4_API int initialise(int number) {
+	/*
+	 * Note: MQL calls are not available until after this function returns.
+	 */
+	MT4_API int initialise(int param1) {
 		static bool init = false;
 		if (!init) {
 			dllmain();
@@ -30,14 +47,37 @@ extern "C" {
 		}
 		
 		try {
-			NBRobot* robot = new NBRobot(number);
+			Robot* robot = new Robot(param1);
 			Instance::push(robot);
-			return (int)robot;
+			return reinterpret_cast<int>(robot);
 		}
 		catch (std::exception& e) {
 			std::cerr << e.what() << std::endl;
 			return 0;
 		}
+	}
+
+	MT4_API void deinitialise(int instance, const int reason) {
+		/* Dealocate the robot memory. */
+		delete Instance::at(instance);
+		/* Remove robot from existing instances. */
+		Instance::erase(instance);
+	}
+
+	MT4_API void enableTrading(int instance) {
+
+	}
+
+	MT4_API void disableTrading(int instance) {
+
+	}
+
+	MT4_API int bar(int instance, char* time, double open, double high, double low, double close, double volume) {
+		return 0;
+	}
+
+	MT4_API int quote(int instance, char* time, double open, double high, double low, double close, double volume) {
+		return 0;
 	}
 }
 #endif

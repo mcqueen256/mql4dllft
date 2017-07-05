@@ -32,6 +32,10 @@ def decode_functions() -> List[MQLFunction]:
   return functions
 
 def get_mql_function(html, filename):
+  print('************')
+  print('************')
+  print('************')
+  print('************')
     """Extracts the fucntion signature the html file."""
     soup = BeautifulSoup(html, "html.parser")
     # get the document node

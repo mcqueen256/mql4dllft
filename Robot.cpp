@@ -2,7 +2,7 @@
 /**
  *
  */
-Robot::Robot() {
+Robot::Robot(int param1) {
 
 }
 

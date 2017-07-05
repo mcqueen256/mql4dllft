@@ -29,7 +29,7 @@ class MQLFunction:
     """Returns the return type of the function."""
     return self._return_type
 
-  def GetParameters(self) -> List[ParameterType]:
+  def getParameters(self) -> List[ParameterType]:
     """Returns list of tuples representing the parameters. The tuple data is
     ordered as (type, name, default, comment) where each element is a str.
     """

@@ -97,5 +97,9 @@ def decode_ft():
 def generate_output(ctx):
   core.generate_all()
 
+@cli.command('test', help="Test this program.")
+def generate_output():
+  click.echo("Use: python -m unittest discover --top-level-directory . --start-directory ./test")
+
 if __name__ == '__main__':
   cli(obj={})

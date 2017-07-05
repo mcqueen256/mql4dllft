@@ -4,9 +4,9 @@
 class Robot
 {
 public:
-	Robot();
+	Robot(int param1);
 	~Robot();
-	int quote();
+	void quote();
 };
 
 #endif

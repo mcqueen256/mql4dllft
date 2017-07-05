@@ -52,6 +52,15 @@ class IndicatorContext:
     self.name = name
     self.input_lines = []
 
+class ExpertContext:
+  """Class to be passed to the template"""
+  def __init__(self, name):
+    self.property_buffers = []
+    self.buffer_register_lines = []
+    self.property_lines = []
+    self.name = name
+    self.input_lines = []
+
 @require_properties
 @require_context
 def get_property_c_lines(ctx, category):
@@ -140,7 +149,25 @@ def generate_mlq_expert(ctx):
 @require_context
 def generate_mlq_indicator(ctx):
   # construct the indicator context
-  expert_ctx =                       IndicatorContext(ctx['properties']['name'])
+  indicator_ctx =                       IndicatorContext(ctx['properties']['name'])
+  indicator_ctx.property_lines =        get_common_property_c_lines()
+  indicator_ctx.property_buffers =      get_buffer_property_c_lines()
+  indicator_ctx.buffer_register_lines = get_buffer_register_lines()
+  indicator_ctx.buffer_name_lines =    get_buffer_name_lines()
+  indicator_ctx.input_lines =           get_input_c_lines()
+
+  # Write from template
+  with open('templates/Indicator.cpp', 'r') as fin:
+    template = Template(fin.read())
+    code = template.render(ctx=indicator_ctx)
+  return code
+
+@require_buffers
+@require_properties
+@require_context
+def generate_mql_expert(ctx):
+  # construct the indicator context
+  expert_ctx =                       ExpertContext(ctx['properties']['name'])
   expert_ctx.property_lines =        get_common_property_c_lines()
   expert_ctx.property_buffers =      get_buffer_property_c_lines()
   expert_ctx.buffer_register_lines = get_buffer_register_lines()
@@ -148,20 +175,38 @@ def generate_mlq_indicator(ctx):
   expert_ctx.input_lines =           get_input_c_lines()
 
   # Write from template
-  with open('templates/Indicator.cpp', 'r') as fin:
+  with open('templates/Expert.cpp', 'r') as fin:
     template = Template(fin.read())
     code = template.render(ctx=expert_ctx)
   return code
 
-def generate_dll_expert(): pass
 def generate_dll_indicator(): pass
 def generate_mql_buffers(): pass
 def generate_dll_buffers(): pass
 def generate_mql_ft(): pass
 def generate_dll_ft(): pass
 
-#@require_functions
+@require_functions
+@require_context
+def generate_mql_functions(ctx):
+  code = ""
+  functions = ctx["functions"]
+  print(functions)
+
+  # Write from template
+  with open('templates/MQLFunctions.cpp', 'r') as fin:
+    template = Template(fin.read())
+    code = template.render(functions=functions)
+  return code
+
 def generate_all():
-  code = generate_mlq_indicator()
-  print(code)
+
+  code = generate_mql_expert()
+  with open('../output/Expert.cpp', 'w') as fout:
+    fout.write(code)
+
+  code = generate_mql_functions()
+  with open('../output/mql4.cpp', 'w') as fout:
+    fout.write(code)
+
   return

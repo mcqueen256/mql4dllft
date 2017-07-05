@@ -1,43 +1,49 @@
 /* MT4 Properties ----------------------------------------------------------- */
-#property copyright "Copyright 2017, Nicholas Buckeridge."
-#property link      "https://mcqueen256.com/"
-#property version   "1.00"
-#property strict
+{% for line in ctx.property_lines %}{{ line }}
+{% endfor %}
 
 /* Inputs ------------------------------------------------------------------- */
-input int number;
+{% for line in ctx.input_lines %}input {{ line }};
+{% endfor %}
 
 /* Globals ------------------------------------------------------------------ */
 int robot_instance;
+unsigned int bar_checksum = 0;
 
 /* Libraries ---------------------------------------------------------------- */
-#include <nb/CommandInterpreter.h>
-#include <nb/Status.h>
-
-/* DLL Functions ------------------------------------------------------------ */
-#import "NBRobot.dll"
-  int initialise(int number);
-  void analyse(int instance, double open, double high, double low, double close);
-  void bar(int instance, double open, double high, double low, double close);
-  char getStreamCharacter(int instance);
-  void sendStreamCharacter(int instance, char c);
+/* DLL Functions ----------------------------------------------------------- */
+#import "{{ ctx.name }}.dll"
+int initialise(int instance);
+void deinitialise(int instance, const int reason);
+void enableTrading(int instance);
+void disableTrading(int instance);
+int bar(int instance, string time, double open, double high, double low, double close, double volume);
+int quote(int instance, string time, double open, double high, double low, double close, double volume);
 #import
-
-/* Global Objects  ---------------------------------------------------------- */
-CommandInterpreter interpreter("NBRobot");
-Status orders("NBRobot");
 
 /* Initialisation ----------------------------------------------------------- */
 int OnInit() {
   /* Send settings to the dll */
   robot_instance = initialise(number);
 
-  /* Analyse buffer history */
+  /* Fill instance with current bar buffer history */
   for (int i = ArraySize(Close) - 1; i > 0; i--) {
-    analyse(robot_instance, Open[i], High[i], Low[i], Close[i]);
+    // above loop does not fill the (first) uncompleted bar.
+    send_bar(robot_instance,
+      TimeToStr(Time[i]),
+      Open[i],
+      High[i],
+      Low[i],
+      Close[i],
+      Volume[i]);
   }
+  enableTrading(robot_instance);
 
   return(INIT_SUCCEEDED);
+}
+
+void OnDeinit(const int reason) {
+  deinitialise(robot_instance, reason);
 }
 
 /* New Data to Analyse ------------------------------------------------------ */
@@ -49,29 +55,38 @@ void OnTick() {
     /* Volume is still increasing */
     tick_volume_tracker = Volume[0];
   } else {
-    /* New bar */
-    bar(robot_instance, Open[1], High[1], Low[1], Close[1]);
+    /* New completed bar */
+    send_bar(robot_instance,
+      TimeToStr(Time[1]),
+      Open[1],
+      High[1],
+      Low[1],
+      Close[1],
+      Volume[1]);
     tick_volume_tracker = 0;
   }
-  analyse(robot_instance, Open[0], High[0], Low[0], Close[0]);
-
-  /* Exchange commands */
-  string status = orders.activeOrders();
-  for (int i = 0; i < StringLen(status); i++) {
-    sendStreamCharacter(robot_instance, StringGetCharacter(status, i));
-  }
-  sendStreamCharacter(robot_instance, '\0');
-  
-  char c;
-  while ((c  = getStreamCharacter(robot_instance)) != '\0') {
-    interpreter.push(c);
-  }
-  interpreter.push(c);
-
-
-  status = orders.activeOrders();
-  for (int i = 0; i < StringLen(status); i++) {
-    sendStreamCharacter(robot_instance, StringGetCharacter(status, i));
-  }
-  sendStreamCharacter(robot_instance, '\0');
+  /* Send the latest quotation */
+  send_quote(robot_instance,
+    TimeToStr(Time[0]),
+    Open[0],
+    High[0],
+    Low[0],
+    Close[0],
+    Volume[0]);
 }
+
+void send_bar(int instance, string time, double open, double high, double low, double close, double volume) {
+
+}
+void send_quote(int instance, string time, double open, double high, double low, double close, double volume) {
+
+}
+
+/*void exe() {
+  int action = bar(...);
+  while (action != 0) {
+    switch(action) {
+      case 1: 
+    }
+  }
+}*/
