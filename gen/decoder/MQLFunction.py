@@ -57,13 +57,23 @@ class MQLFunction:
 
   def setReturnType(self, newReturnType):
     """Sets the return type of the function."""
-    self._return_type = newReturnType
+    if newReturnType is not None:
+      self._return_type = newReturnType.replace('string', 'char*')
+    else:
+      self._return_type = None
 
   def setParameters(self, newParameters):
     """Sets the list of tuples representing the parameters. The tuple data is
     ordered as (type, name, default, comment) where each element is a str.
     """
-    self._parameters = newParameters
+    self._parameters = []
+    for t, n, d, c in newParameters:
+      if t is None: continue
+      t = t.replace('string', 'char*')
+      param = t, n, d, c
+      self._parameters.append(param)
+
+
 
   def setComment(self, newComment):
     """Sets the comment of the function."""
@@ -85,13 +95,6 @@ class MQLFunction:
     """Returns C++ code for the parameters."""
     def form_param(param):
       t, n, d, c = param
-      try:
-        t.replace('string', 'char*')
-      except AttributeError as e:
-        print(self._parameters)
-        print(self)
-        raise e
-      
       if d is None:
         return '{} {}'.format(t, n)
       else:
