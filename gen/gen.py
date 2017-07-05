@@ -29,13 +29,7 @@ def cli(verbos, debug):
   \n\t- Generate all the code
   \n\t- Export generated code
   """
-  level = logging.NOTSET
-  if verbos:
-    level = logging.INFO
-  if debug:
-    level = logging.DEBUG
-  logging.basicConfig(filename='example.log',level=level)
-  core.init()
+  core.init(debug=debug, verbos=verbos)
 
 @cli.command('download-api')
 @click.pass_context

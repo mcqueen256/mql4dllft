@@ -1,10 +1,21 @@
 from decoder import decode_functions, decode_buffers, decode_properties
 from jinja2 import Template
 
+import logging
+
 context = {}
 
-def init():
+def init(debug=False, verbos=False):
   global context
+
+  # Configure logging
+  level = logging.NOTSET
+  if verbos:
+    level = logging.INFO
+  if debug:
+    level = logging.DEBUG
+  logging.basicConfig(filename='example.log',level=level)
+  logging.debug('   --=== Initialised the core! ===--   ')
 
 # Decorators ##################################################################
 

@@ -50,3 +50,33 @@ class MQLFunction:
   def getNamespace(self) -> str:
     """Returns the namespace/category of the function."""
     return self._namespace
+
+  def setName(self, newName):
+    """Sets the name of the function."""
+    self._name = newName
+
+  def setReturnType(self, newReturnType):
+    """Sets the return type of the function."""
+    self._return_type = newReturnType
+
+  def setParameters(self, newParameters):
+    """Sets the list of tuples representing the parameters. The tuple data is
+    ordered as (type, name, default, comment) where each element is a str.
+    """
+    self._parameters = newParameters
+
+  def setComment(self, newComment):
+    """Sets the comment of the function."""
+    self._comment = newComment
+
+  def setReturnComment(self, newReturnComment):
+    """Sets the return comment of the function."""
+    self._return_comment = newReturnComment
+
+  def setNote(self, newNote):
+    """Sets the note of the function."""
+    self._note = newNote
+
+  def setNamespace(self, newNamespace):
+    """Sets the namespace/category of the function."""
+    self._namespace = newNamespace

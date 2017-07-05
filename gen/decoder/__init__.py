@@ -32,31 +32,27 @@ def decode_functions() -> List[MQLFunction]:
   return functions
 
 def get_mql_function(html, filename):
-  print('************')
-  print('************')
-  print('************')
-  print('************')
-    """Extracts the fucntion signature the html file."""
-    soup = BeautifulSoup(html, "html.parser")
-    # get the document node
-    doc_node = soup.find('td', {'class': 'doctext'}).div
+  """Extracts the fucntion signature the html file."""
+  soup = BeautifulSoup(html, "html.parser")
+  # get the document node
+  doc_node = soup.find('td', {'class': 'doctext'}).div
 
-    # seperate the children
-    tags = []
-    for child in doc_node.children:
-        if type(child) != Tag: continue
-        tags.append(child)
+  # seperate the children
+  tags = []
+  for child in doc_node.children:
+    if type(child) != Tag: continue
+    tags.append(child)
 
-    # select correct processing function
-    tag_names = [tag.name for tag in tags]
-    f = None # the function
-    if '.'.join(tag_names).startswith('h1.p.div.p'): f = page_decode_normal(tags)
-    elif '.'.join(tag_names).startswith('h1.p.p.div.p.div.p'): pass # print('process double code block', filename)
-    elif '.'.join(tag_names).startswith('h1.p.p.div.p.p.p.p.p.br'): pass # getlasterror
-    #TODO: throw error for none instances
-    if f is not None: f._namespace = filename
-    logging.info(filename)
-    return f
+  # select correct processing function
+  tag_names = [tag.name for tag in tags]
+  f = None # the function
+  if '.'.join(tag_names).startswith('h1.p.div.p'): f = page_decode_normal(tags)
+  elif '.'.join(tag_names).startswith('h1.p.p.div.p.div.p'): pass # print('process double code block', filename)
+  elif '.'.join(tag_names).startswith('h1.p.p.div.p.p.p.p.p.br'): pass # getlasterror
+  #TODO: throw error for none instances
+  if f is not None: f.setNamespace(filename.split('.')[0])
+  logging.info(filename)
+  return f
 
 def decode_buffers():
   with open('buffers.json', 'r') as fin:

@@ -1,9 +1,10 @@
-import unittest
+import unittest, core
 from decoder import get_mql_function
 
 class TestSimpleFunction(unittest.TestCase):
   @classmethod
   def setUpClass(cls):
+    core.init(debug=True, verbos=True)
     filename = 'account.accountfreemargincheck.html'
     with open('api/' + filename, 'r') as fout:
       cls.function = get_mql_function(fout.read(), filename)
@@ -44,8 +45,7 @@ class TestSimpleFunctionDecoding(TestSimpleFunction):
     self.assertEqual(self.function.getReturnComment(), comment)
 
   def test_note(self):
-    note = 'Returns free margin that remains after the specified order has been opened at the current price on the current account.'
-    self.assertEqual(self.function.getNote(), note)
+    self.assertTrue(self.function.getNote() is None)
 
   def test_namespace(self):
     self.assertEqual(self.function.getNamespace(), 'account')
