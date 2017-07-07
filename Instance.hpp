@@ -3,7 +3,7 @@
 
 #include "Robot.hpp"
 
-class Instance {
+class InstanceManager {
 	static std::map<int, Robot*> robots;
 public:
 	static void push(Robot* robot);
@@ -11,3 +11,14 @@ public:
 	static void erase(int instance);
 };
 
+
+
+class Instance {
+private:
+	Robot* robot;
+public:
+	Instance(Robot* robot);
+	~Instance();
+	
+
+};

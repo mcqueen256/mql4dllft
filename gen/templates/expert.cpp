@@ -19,6 +19,9 @@ void enableTrading(int instance);
 void disableTrading(int instance);
 int bar(int instance, string time, double open, double high, double low, double close, double volume);
 int quote(int instance, string time, double open, double high, double low, double close, double volume);
+
+{% for function in ctx.ft.getFunctions() %}
+{% endfor %}
 #import
 
 /* Initialisation ----------------------------------------------------------- */

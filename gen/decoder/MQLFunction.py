@@ -4,6 +4,11 @@ ParameterType = Tuple[str, str, str, str]
 
 class MQLFunction:
   """Stores the representation of the """
+  _index_store = 1
+  class MQLParameter:
+    def __init__(self, param):
+      self._raw_param = param
+
   def __init__(self):
     """Constructor for MQLFunction: creates and empty function."""
     self._return_type = None
@@ -13,6 +18,8 @@ class MQLFunction:
     self._return_comment = ''
     self._note = ''
     self._namespace = None
+    self._index = MQLFunction._index_store
+    MQLFunction._index_store += 1
 
   def __repr__(self) -> str:
     """Print a neat representation of the MQLFunction"""
@@ -20,6 +27,10 @@ class MQLFunction:
     namespace_repr = '' if self._namespace is None else (self._namespace + '::')
     res = '{} {}{}({});'.format(self._return_type, namespace_repr, self._name, param_repr)
     return '<MQLFunction \'' + res + '\'>'
+
+  def getIndex(self) -> int:
+    """Returns the unique index of this function."""
+    return self._index
 
   def getName(self) -> str:
     """Returns the name of the function."""

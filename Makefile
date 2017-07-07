@@ -1,7 +1,11 @@
+TARGET = Robot
+
 ifeq ($(OS),Windows_NT)
 	UNAME = win
+	EXT = dll
 else
 	UNAME = unix
+	EXT = o
 endif
 
 ifeq ($(UNAME),win)
@@ -9,17 +13,19 @@ ifeq ($(UNAME),win)
 	RMDIR = 
 	CC = cl.exe
 	CFLAGS = /EHsc /D_USRDLL /D_WINDLL
-	OUTPUT = /link /DLL /OUT:output/Robot.dll
+	OUTPUT = /link /DLL /OUT:output/$(TARGET).dll
 else
 	RMFILE = rm -f *.bin *.exe *.so *.pid *.o
 	RMDIR = rm -rf *.induct *.outfiles *.dSYM kernels
 	CC = g++
 	CFLAGS = -c
-	OUTPUT = -o output/Robot.o
+	OUTPUT = -o output/$(TARGET).o
 endif
 
+CPP_SRCS:=$(wildcard *.cpp)
+
 all:
-	$(CC) $(CFLAGS) *.cpp $(OUTPUT)
+	$(CC) $(CFLAGS) $(CPP_SRCS) $(OUTPUT)
 
 clean:
 	$(RMFILE)

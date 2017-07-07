@@ -1,5 +1,6 @@
 from decoder import decode_functions, decode_buffers, decode_properties
 from jinja2 import Template
+from FunctionTranslator import FunctionTranslator
 
 import logging
 
@@ -56,17 +57,18 @@ def require_context(func, *args, **kwargs):
     return func(context, *args, **kwargs)
   return f
 
+def require_function_translator(func, *args, **kwargs):
+  """Decorator that gives a function translation object in the context."""
+  @require_functions
+  def inner(*args, **kwargs):
+    global context
+    if 'function_translator' not in context.keys():
+      context['function_translator'] = FunctionTranslator(context)
+    return func(*args, **kwargs)
+  return inner 
+
 # Utility #####################################################################
 class IndicatorContext:
-  """Class to be passed to the template"""
-  def __init__(self, name):
-    self.property_buffers = []
-    self.buffer_register_lines = []
-    self.property_lines = []
-    self.name = name
-    self.input_lines = []
-
-class ExpertContext:
   """Class to be passed to the template"""
   def __init__(self, name):
     self.property_buffers = []
@@ -178,20 +180,23 @@ def generate_mlq_indicator(ctx):
 
 @require_buffers
 @require_properties
+@require_function_translator
 @require_context
 def generate_mql_expert(ctx):
-  # construct the indicator context
-  expert_ctx =                       ExpertContext(ctx['properties']['name'])
-  expert_ctx.property_lines =        get_common_property_c_lines()
-  expert_ctx.property_buffers =      get_buffer_property_c_lines()
-  expert_ctx.buffer_register_lines = get_buffer_register_lines()
-  expert_ctx.buffer_name_lines =    get_buffer_name_lines()
-  expert_ctx.input_lines =           get_input_c_lines()
+  class ExpertContext:
+    """Class to be passed to the template"""
+    def __init__(self):
+      self.property_buffers = get_buffer_property_c_lines()
+      self.buffer_register_lines = get_buffer_register_lines()
+      self.property_lines = get_common_property_c_lines()
+      self.name = ctx['properties']['name']
+      self.input_lines = get_input_c_lines()
+      self.ft = ctx['function_translator']
 
   # Write from template
   with open('templates/Expert.cpp', 'r') as fin:
     template = Template(fin.read())
-    code = template.render(ctx=expert_ctx)
+    code = template.render(ctx=ExpertContext())
   return code
 
 def generate_dll_indicator(): pass
