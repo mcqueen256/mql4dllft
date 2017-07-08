@@ -1,5 +1,7 @@
 TARGET = Robot
 
+
+
 ifeq ($(OS),Windows_NT)
 	UNAME = win
 	EXT = dll
@@ -23,9 +25,14 @@ else
 endif
 
 CPP_SRCS:=$(wildcard *.cpp)
+TEST_SRC:=$(wildcard test_src/*.cpp)
 
 all:
 	$(CC) $(CFLAGS) $(CPP_SRCS) $(OUTPUT)
+
+test:
+	$(CC) $(TEST_SRC) -o output/test
+	./output/test
 
 clean:
 	$(RMFILE)

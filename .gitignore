@@ -39,3 +39,4 @@ __pycashe__/
 # logging
 example.log
 output/*
+test_src/catch.hpp
