@@ -31,7 +31,7 @@ all:
 	$(CC) $(CFLAGS) $(CPP_SRCS) $(OUTPUT)
 
 test:
-	$(CC) $(TEST_SRC) -o output/test
+	$(CC) -std=c++11 $(TEST_SRC) -o output/test
 	./output/test
 
 clean:
