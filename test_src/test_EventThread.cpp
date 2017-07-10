@@ -1,15 +1,38 @@
 #include "catch.hpp"
 
-#include <thread> // std::thread
-#include <sstream> // std::stringstream
-#include <functional> // std::function
-#include <mutex>
-#include <exception>
+#include <iostream> // std::cout, std::endl
+#include <exception> // std::bad_function_call, std::runtime_error
 #include <thread> // std::thread, std::this_thread::yield
 #include <mutex> // std::mutex, std::unique_lock
 #include <condition_variable> // std::condition_variable
 #include <functional> // std::function
 
+/**
+ * The EventThreader class runs two threads simutaniously but not at the same
+ * time. The switching between threads is controlled by the EventThreader
+ * class. The two threads are the current thread (named the calling thread)
+ * and the second thread is spawned from a given function (event thread). The
+ * event thread is spawned and paused in the construction of the EventThreader
+ * class.
+ *
+ * Operation
+ * Only the calling thread will run until it requests that event thread is run.
+ * While one thread is running, it is guaranteed that the other is paused. On
+ * EventThreader construction, the event thead is paused. The event thread is
+ * invoked (and the calling thread paused) either with calls
+ * EventThreader::join() or EventThreader::switchToEventThread(). From the
+ * event thread, the calling thread can be invoked by a call to the event
+ * threads function parameter.
+ *
+ * The EventThreader takes one parameter on construction to be a functional
+ * object f of type void(void(void)). f will be the function run as the event
+ * thread. f's parameter is the function that invokes the event thread to
+ * pause, allowing the calling thread to continue.
+ *
+ * Every call to EventThreader::switchToEventThread() from the calling thread
+ * must be followed by a call EventThreader::switchToCallingThread() via
+ * calling the event theads functional parameter from the event thread.
+ */
 class EventThreader {
 private:
     std::condition_variable event_waiter, calling_waiter;
@@ -17,24 +40,41 @@ private:
     std::mutex mtx;
     std::thread event_thread;
     void switchToCallingThread();
+    bool request_end_of_event = false;
+    bool waiting_for_event = false;
+    std::function<void(void)> event_cleanup;
+    std::runtime_error* exception_from_the_event_thread;
 public:
     EventThreader(std::function<void (std::function<void (void)>)> func);
     ~EventThreader();
     void switchToEventThread();
     void join();
+    void setEventCleanup(std::function<void(void)>);
 };
 
 EventThreader::EventThreader(std::function<void (std::function<void (void)>)> func) {
+    exception_from_the_event_thread = nullptr;
     calling_lock = new std::unique_lock<std::mutex>(mtx);
+    event_cleanup = [](){}; // empty function
     auto event = [&](){
         /* mtx force switch to calling - blocked by the mutex */
         event_lock = new std::unique_lock<std::mutex>(mtx);
         calling_waiter.notify_one();
         event_waiter.wait(*event_lock);
         std::this_thread::yield();
-        func([&](){switchToCallingThread();});
-        /* end - join to calling */
+        try {
+            func([&](){switchToCallingThread();});
+            if (waiting_for_event) { // the event has ended, but not ready to join
+                // rejoin the calling thread after dealing with this exception
+                calling_waiter.notify_one();
+                throw std::runtime_error("calling thread is not ready to join");
+            }
+        } catch (const std::runtime_error &e) {
+            /* report the exception to the calling thread */
+            exception_from_the_event_thread = new std::runtime_error(e);
+        }
         delete event_lock;
+        event_cleanup();
     };
     
     event_thread = std::thread(event);
@@ -46,6 +86,10 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
 EventThreader::~EventThreader() {}
 
 void EventThreader::switchToCallingThread() {
+    if (request_end_of_event) {
+        std::runtime_error err("calling thread requested join, cannot call switchToCallingThread()");
+        throw err;
+    }
     /* switch to calling */
     calling_waiter.notify_one();
     std::this_thread::yield();
@@ -55,19 +99,32 @@ void EventThreader::switchToCallingThread() {
 }
 
 void EventThreader::switchToEventThread() {
+    waiting_for_event = true;
     /* switch to event */
     event_waiter.notify_one();
     std::this_thread::yield();
     calling_waiter.wait(*calling_lock);
     std::this_thread::yield();
     /* back from event */
+    waiting_for_event = false;
 }
 
 void EventThreader::join() {
+    request_end_of_event = true;
     delete calling_lock; // remove lock on this thread, allow event to run
     event_waiter.notify_one();
     std::this_thread::yield();
     event_thread.join();
+    if (exception_from_the_event_thread != nullptr) {
+        /* an exception occured */
+        std::runtime_error e_copy(exception_from_the_event_thread->what());
+        delete exception_from_the_event_thread;
+        throw e_copy;
+    }
+}
+
+void EventThreader::setEventCleanup(std::function<void(void)> cleanup) {
+    event_cleanup = cleanup;
 }
 
 TEST_CASE( "EventThreader", "[EventThreader]" ) {
@@ -119,28 +176,55 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 		EventThreader et(f);
 		et.join();
-		REQUIRE( ss.str() == "" );
-	}
-
-	SECTION("one switch to event") {
-		auto f = [&ss](std::function<void(void)> switchToMainThread){
-			ss << "f";
-		};
-		EventThreader et(f);
-		et.switchToEventThread();
-		et.join();
 		REQUIRE( ss.str() == "f" );
 	}
 
-	SECTION("two switchs to event") {
-		auto f = [&ss](std::function<void(void)> switchToMainThread){
-			ss << "f";
-		};
-		EventThreader et(f);
-		et.switchToEventThread();
-		et.switchToEventThread(); // will do nothing
-		et.join();
+	SECTION("one switch to event - trigger exception with type std::runtime_error") {
+		REQUIRE_THROWS_AS([&ss](){
+			auto f = [&ss](std::function<void(void)> switchToMainThread){
+				ss << "f";
+			};
+			EventThreader et(f);
+			et.switchToEventThread();
+			et.join();
+		}, std::runtime_error);
 		REQUIRE( ss.str() == "f" );
+	}
+
+	SECTION("one switch to event - trigger exception with text") {
+		REQUIRE_THROWS_WITH([&ss](){
+			auto f = [&ss](std::function<void(void)> switchToMainThread){
+				ss << "f";
+			};
+			EventThreader et(f);
+			et.switchToEventThread();
+			et.join();
+		}, "calling thread is not ready to join");
+	}
+
+	SECTION("two switch to event - trigger exception with type std::runtime_error") {
+		REQUIRE_THROWS_AS([&ss](){
+			auto f = [&ss](std::function<void(void)> switchToMainThread){
+				ss << "f";
+			};
+			EventThreader et(f);
+			et.switchToEventThread();
+			et.switchToEventThread();
+			et.join();
+		}, std::runtime_error);
+		REQUIRE( ss.str() == "f" );
+	}
+
+	SECTION("two switch to event - trigger exception with text") {
+		REQUIRE_THROWS_WITH([&ss](){
+			auto f = [&ss](std::function<void(void)> switchToMainThread){
+				ss << "f";
+			};
+			EventThreader et(f);
+			et.switchToEventThread();
+			et.switchToEventThread();
+			et.join();
+		}, "calling thread is not ready to join");
 	}
 
 	SECTION("print order") {
@@ -150,6 +234,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			ss << 3;
 			switchToMainThread();
 			ss << 5;
+			switchToMainThread();
 		};
 		EventThreader et(f);
 		ss << 0;
@@ -169,7 +254,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			ss << "2";
 		};
 		EventThreader et(f);
-		et.switchToEventThread();
 		et.join();
 		REQUIRE( ss.str() == "12" );
 	}
