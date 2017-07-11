@@ -69,7 +69,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 		EventThreader et(f);
 		REQUIRE_THROWS_AS(et.switchToEventThread(), std::runtime_error);
-		et.join();
 	}
 
 	SECTION("one switch to event without a switch to main - text") {
@@ -78,7 +77,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 		EventThreader et(f);
 		REQUIRE_THROWS_WITH(et.switchToEventThread(), "switch to event not matched with a switch to calling");
-		et.join();
 	}
 
 	SECTION("two switches to event with no switches to main") {
@@ -88,7 +86,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		EventThreader et(f);
 		REQUIRE_THROWS_AS(et.switchToEventThread(), std::runtime_error);
 		REQUIRE_THROWS_AS(et.switchToEventThread(), std::runtime_error);
-		et.join();
 	}
 
 	SECTION("two switches to event with no switches to main - text") {
@@ -98,18 +95,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		EventThreader et(f);
 		REQUIRE_THROWS_WITH(et.switchToEventThread(), "switch to event not matched with a switch to calling");
 		REQUIRE_THROWS_WITH(et.switchToEventThread(), "switch to event not matched with a switch to calling");
-		et.join();
-	}
-/*
-	SECTION("two switches to event with no switches to main") {
-		auto f = [&ss](std::function<void(void)> switchToMainThread){
-			ss << "f";
-		};
-		EventThreader et(f);
-		et.switchToEventThread();
-		REQUIRE_THROWS_WITH(et.switchToEventThread(), "event thread ended, cannot switch to it");
-		et.join();
-		REQUIRE( ss.str() == "f" );
 	}
 
 	SECTION("print order") {
@@ -152,7 +137,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		EventThreader et(f);
 		et.switchToEventThread();
 		et.join();
-		REQUIRE( ss.str() == "1" );
+		REQUIRE( ss.str() == "12" );
 	}
 
 	SECTION("premiture join with exception message") {
@@ -162,20 +147,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 		EventThreader et(f);
 		et.switchToEventThread();
-		REQUIRE_THROWS_WITH([&et](){
-			et.join();
-		}, "EventThreader attempted join but event thread is still running");
+		REQUIRE_THROWS_WITH(et.join(), "switch to calling not matched with a switch to event");
 	}
-
-	SECTION("EventThreader when event still running") {
-		auto f = [&ss](std::function<void(void)> switchToMainThread){
-			switchToMainThread();
-			switchToMainThread();
-		};
-		EventThreader* et = new EventThreader(f);
-		et->switchToEventThread();
-		REQUIRE_THROWS_WITH([&et](){
-			delete et;
-		}(), "EventThreader attempted deconstructor but event thread is still running");
-	}*/
 }

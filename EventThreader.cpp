@@ -76,7 +76,6 @@ void EventThreader::deallocate() {
 void EventThreader::switchToCallingThread() {
     if (!require_switch_from_event) {
         throw std::runtime_error("switch to calling not matched with a switch to event");
-        return;
     }
     require_switch_from_event = false;
     /* switch to calling */
@@ -99,8 +98,8 @@ void EventThreader::switchToEventThread() {
     std::this_thread::yield();
     /* back from event */
     if (require_switch_from_event) {
-        /* this exception is thrown if switchToCallingThread() was not used. */
-        throw std::runtime_error("switch to event not matched with a switch to calling");
+        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
+        join();
     }
 }
 
