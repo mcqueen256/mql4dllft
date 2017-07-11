@@ -42,6 +42,7 @@ private:
     void switchToCallingThread();
     bool request_end_of_event = false;
     bool waiting_for_event = false;
+    bool event_ended = false;
     std::function<void(void)> event_cleanup;
     std::runtime_error* exception_from_the_event_thread;
 public:
@@ -75,6 +76,7 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
         }
         delete event_lock;
         event_cleanup();
+        event_ended = true;
     };
     
     event_thread = std::thread(event);
@@ -99,6 +101,9 @@ void EventThreader::switchToCallingThread() {
 }
 
 void EventThreader::switchToEventThread() {
+    if (event_ended) {
+        throw std::runtime_error("event thread ended, cannot switch to it");
+    }
     waiting_for_event = true;
     /* switch to event */
     event_waiter.notify_one();
@@ -170,7 +175,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		REQUIRE( ss.str() == "here" );
 	}
 
-	SECTION("no switch to event") {
+	SECTION("event is run without switch") {
 		auto f = [&ss](std::function<void(void)> switchToMainThread){
 			ss << "f";
 		};
@@ -179,27 +184,29 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		REQUIRE( ss.str() == "f" );
 	}
 
-	SECTION("one switch to event - trigger exception with type std::runtime_error") {
-		REQUIRE_THROWS_AS([&ss](){
-			auto f = [&ss](std::function<void(void)> switchToMainThread){
-				ss << "f";
-			};
-			EventThreader et(f);
-			et.switchToEventThread();
-			et.join();
-		}, std::runtime_error);
-		REQUIRE( ss.str() == "f" );
+	SECTION("event is run at join (not asked to run before)") {
+		auto f = [&ss](std::function<void(void)> switchToMainThread){
+			ss << "f";
+		};
+		EventThreader et(f);
+		ss << "p";
+		et.join();
+		REQUIRE( ss.str() == "pf" );
 	}
 
-	SECTION("one switch to event - trigger exception with text") {
-		REQUIRE_THROWS_WITH([&ss](){
+	SECTION("one switch to event without a switch to main") {
+		auto f = [&ss](){
 			auto f = [&ss](std::function<void(void)> switchToMainThread){
 				ss << "f";
 			};
 			EventThreader et(f);
 			et.switchToEventThread();
 			et.join();
-		}, "calling thread is not ready to join");
+		};
+		REQUIRE_THROWS_AS(f(), std::runtime_error);
+		REQUIRE( ss.str() == "f" );
+		REQUIRE_THROWS_WITH(f(), "calling thread is not ready to join");
+		REQUIRE( ss.str() == "ff" );
 	}
 
 	SECTION("two switch to event - trigger exception with type std::runtime_error") {
@@ -211,7 +218,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			et.switchToEventThread();
 			et.switchToEventThread();
 			et.join();
-		}, std::runtime_error);
+		}(), std::runtime_error);
 		REQUIRE( ss.str() == "f" );
 	}
 
@@ -224,7 +231,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			et.switchToEventThread();
 			et.switchToEventThread();
 			et.join();
-		}, "calling thread is not ready to join");
+		}(), "event thread ended, cannot switch to it");
 	}
 
 	SECTION("print order") {
@@ -291,6 +298,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		et->switchToEventThread();
 		REQUIRE_THROWS_WITH([&et](){
 			delete et;
-		}, "EventThreader attempted deconstructor but event thread is still running");
+		}(), "EventThreader attempted deconstructor but event thread is still running");
 	}
 }
