@@ -209,8 +209,8 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		REQUIRE( ss.str() == "ff" );
 	}
 
-	SECTION("two switch to event - trigger exception with type std::runtime_error") {
-		REQUIRE_THROWS_AS([&ss](){
+	SECTION("two switches to event with no switches to main") {
+		auto f = [&ss](){
 			auto f = [&ss](std::function<void(void)> switchToMainThread){
 				ss << "f";
 			};
@@ -218,20 +218,11 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			et.switchToEventThread();
 			et.switchToEventThread();
 			et.join();
-		}(), std::runtime_error);
+		};
+		REQUIRE_THROWS_AS(f(), std::runtime_error);
 		REQUIRE( ss.str() == "f" );
-	}
-
-	SECTION("two switch to event - trigger exception with text") {
-		REQUIRE_THROWS_WITH([&ss](){
-			auto f = [&ss](std::function<void(void)> switchToMainThread){
-				ss << "f";
-			};
-			EventThreader et(f);
-			et.switchToEventThread();
-			et.switchToEventThread();
-			et.join();
-		}(), "event thread ended, cannot switch to it");
+		REQUIRE_THROWS_WITH(f(), "event thread ended, cannot switch to it");
+		REQUIRE( ss.str() == "ff" );
 	}
 
 	SECTION("print order") {
