@@ -40,7 +40,7 @@ extern "C" {
 	/*
 	 * Note: MQL calls are not available until after this function returns.
 	 */
-	MT4_API RobotReferenceType initialise(RobotReferenceType param1) {
+	MT4_API RobotReferenceType initialise(int param1) {
 		static bool init = false;
 		if (!init) {
 			dllmain();

@@ -40,6 +40,10 @@ class MQLFunction:
     """Returns the return type of the function."""
     return self._return_type
 
+  def getReturnTypeDLL(self) -> str:
+    """Returns the return type of the function for the DLL."""
+    return self._return_type.replace('char*', 'std::string')
+
   def getParameters(self) -> List[ParameterType]:
     """Returns list of tuples representing the parameters. The tuple data is
     ordered as (type, name, default, comment) where each element is a str.
@@ -106,6 +110,7 @@ class MQLFunction:
     """Returns C++ code for the parameters."""
     def form_param(param):
       t, n, d, c = param
+      t = t.replace('char*', 'std::string')
       if d is None:
         return '{} {}'.format(t, n)
       else:
