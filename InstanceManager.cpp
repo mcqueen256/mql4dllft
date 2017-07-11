@@ -2,7 +2,7 @@
 #include <map>
 #include <iostream>
 
-#include "Instance.hpp"
+#include "InstanceManager.hpp"
 #include "Robot.hpp"
 
 std::map<RobotReferenceType, Robot*> InstanceManager::robots;

@@ -3,8 +3,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <functional>
 
-#include "Instance.hpp"
+#include "InstanceManager.hpp"
 #include "Robot.hpp"
 
 #if defined(__BORLANDC__)
@@ -73,6 +74,11 @@ extern "C" {
 	}
 
 	MT4_API int bar(RobotReferenceType instance, char* time, double open, double high, double low, double close, double volume) {
+		std::string string_time = time;
+		auto event = [=] (std::function<void(void)> switchToDLLThread){
+			InstanceManager::at(instance);
+			switchToDLLThread();
+		};
 		return 0;
 	}
 
