@@ -39,7 +39,7 @@ extern "C" {
 	/*
 	 * Note: MQL calls are not available until after this function returns.
 	 */
-	MT4_API int initialise(int param1) {
+	MT4_API RobotReferenceType initialise(RobotReferenceType param1) {
 		static bool init = false;
 		if (!init) {
 			dllmain();
@@ -48,8 +48,8 @@ extern "C" {
 		
 		try {
 			Robot* robot = new Robot(param1);
-			Instance::push(robot);
-			return reinterpret_cast<int>(robot);
+			InstanceManager::push(robot);
+			return reinterpret_cast<RobotReferenceType>(robot);
 		}
 		catch (std::exception& e) {
 			std::cerr << e.what() << std::endl;
@@ -57,26 +57,26 @@ extern "C" {
 		}
 	}
 
-	MT4_API void deinitialise(int instance, const int reason) {
+	MT4_API void deinitialise(RobotReferenceType instance, const int reason) {
 		/* Dealocate the robot memory. */
-		delete Instance::at(instance);
+		delete InstanceManager::at(instance);
 		/* Remove robot from existing instances. */
-		Instance::erase(instance);
+		InstanceManager::erase(instance);
 	}
 
-	MT4_API void enableTrading(int instance) {
-
-	}
-
-	MT4_API void disableTrading(int instance) {
+	MT4_API void enableTrading(RobotReferenceType instance) {
 
 	}
 
-	MT4_API int bar(int instance, char* time, double open, double high, double low, double close, double volume) {
+	MT4_API void disableTrading(RobotReferenceType instance) {
+
+	}
+
+	MT4_API int bar(RobotReferenceType instance, char* time, double open, double high, double low, double close, double volume) {
 		return 0;
 	}
 
-	MT4_API int quote(int instance, char* time, double open, double high, double low, double close, double volume) {
+	MT4_API int quote(RobotReferenceType instance, char* time, double open, double high, double low, double close, double volume) {
 		return 0;
 	}
 }
