@@ -223,6 +223,12 @@ def generate_mql_functions(ctx):
     code = template.render(func_dict_by_namespace=func_dict_by_namespace)
   return code
 
+@require_functions
+@require_context
+def generate_expert_cpp(ctx):
+  functions = ctx["functions"]
+  
+
 def generate_all():
 
   code = generate_mql_expert()

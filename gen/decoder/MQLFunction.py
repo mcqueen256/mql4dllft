@@ -84,7 +84,7 @@ class MQLFunction:
     self._parameters = []
     for t, n, d, c in newParameters:
       if t is None: continue
-      t = t.replace('string', 'char*')
+      # t = t.replace('string', 'char*')
       param = t, n, d, c
       self._parameters.append(param)
 
