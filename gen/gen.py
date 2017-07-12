@@ -75,17 +75,6 @@ def download_api(ctx):
         if ctx.obj['DEBUG']: click.echo("Written to: " + 'api/' + name + '.html')
   return
 
-
-@cli.command('--gen-buffer', help="Generate code for MQL4 buffers.")
-@click.pass_context
-def decode_buffers():
-  pass
-
-@cli.command('--gen-ft', help="Generate code for fucntion translation.")
-@click.pass_context
-def decode_ft():
-  pass
-
 @cli.command('gen-code', help="Generate all the code.")
 @click.pass_context
 def generate_output(ctx):
