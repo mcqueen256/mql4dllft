@@ -1,4 +1,4 @@
-from .MQLFunction import MQLFunction
+from MQLFunction import MQLFunction
 from typing import List
 from tqdm import tqdm
 from bs4 import BeautifulSoup
