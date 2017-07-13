@@ -83,7 +83,11 @@ mql::{{ namespace | title }}& mql::MQL4Functions::{{ namespace }}() {
 }
 {% endfor %}
 
-MQLInterface& getInterface() {
+mql::MQLInterface& mql::MQL4Functions::getInterface() {
+    return interface;
+}
+
+RobotReferenceType mql::MQL4Functions::getInstance() {
     return instance;
 }
 

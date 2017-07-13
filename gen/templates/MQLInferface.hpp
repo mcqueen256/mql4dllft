@@ -11,7 +11,6 @@ namespace mql {
 		int action;
 		std::function<void(void)> toCalling;
     public:
-        RobotReferenceType getInstance();
 		{% for t, n in ft.get_param_dict_without_refs().items() -%}
             std::queue<{{ t }}> param{{ n }}Queue;
 		{% endfor %}
@@ -59,6 +58,7 @@ namespace mql {
 		    {{ namespace | title }}& {{ namespace }}();
 		{% endfor %}
 		MQLInterface& getInterface();
+		RobotReferenceType getInstance();
 	};
 }
 
