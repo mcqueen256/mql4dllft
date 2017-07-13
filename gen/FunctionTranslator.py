@@ -1,3 +1,12 @@
+def refactor_param_type_name(n):
+    split_by_whitespace = n.split()
+    type_segments = []
+    for need_to_be_split_by_underscore in [word.capitalize() for word in split_by_whitespace]:
+        split_by_underscore = need_to_be_split_by_underscore.split('_')
+        new_type = ''.join([word.capitalize() for word in split_by_underscore])
+        type_segments.append(new_type)
+    return ''.join(type_segments)
+
 class FunctionTranslator(object):
     """docstring for FunctionTranslator"""
 
@@ -15,30 +24,21 @@ class FunctionTranslator(object):
 
         self._paramStackTypePushMathods = {}
         for t in self._parameter_types:
-            split_by_whitespace = t.split()
-            type_segments = []
-            for need_to_be_split_by_underscore in [word.capitalize() for word in split_by_whitespace]:
-                split_by_underscore = need_to_be_split_by_underscore.split('_')
-                new_type = ''.join([word.capitalize() for word in split_by_underscore])
-                type_segments.append(new_type)
-            name = "paramStack{type}Push".format(type=''.join(type_segments)).replace('&', '')
+            t_name = refactor_param_type_name(t)
+            name = "paramStack{type}Push".format(type=t_name).replace('&', '')
             self._paramStackTypePushMathods[t] = name
 
         self._result_type_getters = {}
         for t in self._return_types:
-            split_by_whitespace = t.split()
-            type_segments = []
-            for need_to_be_split_by_underscore in [word.capitalize() for word in split_by_whitespace]:
-                split_by_underscore = need_to_be_split_by_underscore.split('_')
-                new_type = ''.join([word.capitalize() for word in split_by_underscore])
-                type_segments.append(new_type)
-            self._result_type_getters[t] = "get{}Result()".format(''.join(type_segments))
+            t_name = refactor_param_type_name(t)
+            self._result_type_getters[t] = "get{}Result".format(t_name)
 
         self._references = [x for x in self._parameter_types if '&' in x]
         self._references += [x.replace('&', '') for x in self._references]
         self._reference_setters = {}
         for t in self._references:
-            self._reference_setters[t] = 'refQueue{}'.format(t.replace('&', ''))
+            t_name = refactor_param_type_name(t)
+            self._reference_setters[t] = 'refQueue{}'.format(t_name.replace('&', ''))
 
     def getFunctions(self):
         functions = []
