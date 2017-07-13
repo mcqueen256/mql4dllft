@@ -1,10 +1,12 @@
 /* MT4 Properties ----------------------------------------------------------- */
-{% for line in ctx.property_lines %}{{ line }}
+{% for line in expert.property_lines -%}
+{{ line }}
 {% endfor %}
 
 /* Inputs ------------------------------------------------------------------- */
-{% for line in ctx.input_lines %}input {{ line }};
-{% endfor %}
+{% for line in expert.input_lines -%}
+input {{ line }};
+{%- endfor %}
 
 /* Globals ------------------------------------------------------------------ */
 int robot_instance;
@@ -12,7 +14,7 @@ unsigned int bar_checksum = 0;
 
 /* Libraries ---------------------------------------------------------------- */
 /* DLL Functions ----------------------------------------------------------- */
-#import "{{ ctx.name }}.dll"
+#import "{{ expert.name }}.dll"
 int initialise(int instance);
 void deinitialise(int instance, const int reason);
 void enableTrading(int instance);
@@ -20,8 +22,7 @@ void disableTrading(int instance);
 int bar(int instance, string time, double open, double high, double low, double close, double volume);
 int quote(int instance, string time, double open, double high, double low, double close, double volume);
 
-{% for function in ctx.ft.getFunctions() %}
-{% endfor %}
+
 #import
 
 /* Initialisation ----------------------------------------------------------- */

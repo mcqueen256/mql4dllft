@@ -120,6 +120,15 @@ class MQLFunction:
         params = [form_param(param) for param in self._parameters]
         return ', '.join(params)
 
+    def getReferenceParameters(self):
+        """Return the list of parameters that are parameters."""
+        params = []
+        for t, n, d, c in self._parameters:
+            if '&' in t:
+                param = (t.replace('&', ''), n, d, c)
+                params.append(param)
+        return params
+
     def copy(self):
         """Create a unique copy based of this parameter."""
         function = MQLFunction()

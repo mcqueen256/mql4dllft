@@ -53,11 +53,8 @@ def download_api(ctx):
             click.echo("Downloading from: " + url)
         opener = AppURLopener()
         response = opener.open(url)
-        if response.getcode() != 200:
-            if ctx.obj['DEBUG']: click.echo(response.getcode(), ":", url)
         content = response.file.read().decode()
         opener.close()
-        if ctx.obj['DEBUG']: click.echo("Done.")
         return content
 
     # Donwload and decode the function index page
@@ -70,12 +67,10 @@ def download_api(ctx):
         if len(a['href'].split('/')) == 3:
             href = a['href'].split('#')[0]
             name = '.'.join(href.split('/')[-2:])
-            if ctx.obj['DEBUG']: click.echo(name)
             if (name + '.html' in os.listdir('api/')): continue
             page = get_html('/'.join(url.split('/')[:-1]) + href)
             with open('api/' + name + '.html', 'w') as file:
                 file.write(page)
-                if ctx.obj['DEBUG']: click.echo("Written to: " + 'api/' + name + '.html')
     return
 
 
