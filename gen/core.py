@@ -18,7 +18,7 @@ def init(debug=False, verbos=False):
     level = logging.INFO
   if debug:
     level = logging.DEBUG
-  logging.basicConfig(filename='example.log',level=level)
+  logging.basicConfig(filename='../output/generator.log',level=level)
   logging.debug('   --=== Initialised the core! ===--   ')
 
 # Decorators ##################################################################

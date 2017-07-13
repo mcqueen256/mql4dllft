@@ -1,4 +1,4 @@
-from .MQLFunction import MQLFunction
+from MQLFunction import MQLFunction
 from .param_decoder import param_decoders
 from bs4.element import Tag
 import logging
