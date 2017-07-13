@@ -6,150 +6,177 @@ import logging
 
 context = {}
 settings = {
-  'DUP_LEVEL': 5
+    'DUP_LEVEL': 5
 }
 
-def init(debug=False, verbos=False):
-  global context, settings
 
-  # Configure logging
-  level = logging.NOTSET
-  if verbos:
-    level = logging.INFO
-  if debug:
-    level = logging.DEBUG
-  logging.basicConfig(filename='../output/generator.log',level=level)
-  logging.debug('   --=== Initialised the core! ===--   ')
+def init(debug=False, verbos=False):
+    global context, settings
+
+    # Configure logging
+    level = logging.NOTSET
+    if verbos:
+        level = logging.INFO
+    if debug:
+        level = logging.DEBUG
+    logging.basicConfig(filename='../output/generator.log', level=level)
+    logging.debug('   --=== Initialised the core! ===--   ')
+
 
 # Decorators ##################################################################
 
 def require_buffers(func, *args, **kwargs):
-  """Decorator for ensuring that the MQL buffer is in the context."""
-  def inner(*args, **kwargs):
-    global context
-    if 'buffers' not in context.keys():
-      context['buffers'] = decode_buffers()
-    return func(*args, **kwargs)
-  return inner
+    """Decorator for ensuring that the MQL buffer is in the context."""
+
+    def inner(*args, **kwargs):
+        global context
+        if 'buffers' not in context.keys():
+            context['buffers'] = decode_buffers()
+        return func(*args, **kwargs)
+
+    return inner
+
 
 def require_properties(func, *args, **kwargs):
-  """Decorator for ensuring that the MQL properties are in the context."""
-  def inner(*args, **kwargs):
-    global context
-    if 'properties' not in context.keys():
-      context['properties'] = decode_properties()
-    return func(*args, **kwargs)
-  return inner
+    """Decorator for ensuring that the MQL properties are in the context."""
+
+    def inner(*args, **kwargs):
+        global context
+        if 'properties' not in context.keys():
+            context['properties'] = decode_properties()
+        return func(*args, **kwargs)
+
+    return inner
+
 
 def require_functions(func, *args, **kwargs):
-  """Decorator for ensuring that the MQL functions is in the context."""
-  def inner(*args, **kwargs):
-    global context
-    if 'functions' not in context.keys():
-      context['functions'] = decode_functions()
-    return func(*args, **kwargs)
-  return inner
+    """Decorator for ensuring that the MQL functions is in the context."""
+
+    def inner(*args, **kwargs):
+        global context
+        if 'functions' not in context.keys():
+            context['functions'] = decode_functions()
+        return func(*args, **kwargs)
+
+    return inner
+
 
 def require_context(func, *args, **kwargs):
-  """Decorator that gives a function the context as the first parameter."""
-  def f(*args, **kwargs):
-    global context
-    return func(context, *args, **kwargs)
-  return f
+    """Decorator that gives a function the context as the first parameter."""
+
+    def f(*args, **kwargs):
+        global context
+        return func(context, *args, **kwargs)
+
+    return f
+
 
 def require_function_translator(func, *args, **kwargs):
-  """Decorator that gives a function translation object in the context."""
-  @require_functions
-  def inner(*args, **kwargs):
-    global context
-    if 'function_translator' not in context.keys():
-      context['function_translator'] = FunctionTranslator(context)
-    return func(*args, **kwargs)
-  return inner 
+    """Decorator that gives a function translation object in the context."""
+
+    @require_functions
+    def inner(*args, **kwargs):
+        global context
+        if 'function_translator' not in context.keys():
+            context['function_translator'] = FunctionTranslator(context)
+        return func(*args, **kwargs)
+
+    return inner
+
 
 # Utility #####################################################################
 class IndicatorContext:
-  """Class to be passed to the template"""
-  def __init__(self, name):
-    self.property_buffers = []
-    self.buffer_register_lines = []
-    self.property_lines = []
-    self.name = name
-    self.input_lines = []
+    """Class to be passed to the template"""
+
+    def __init__(self, name):
+        self.property_buffers = []
+        self.buffer_register_lines = []
+        self.property_lines = []
+        self.name = name
+        self.input_lines = []
+
 
 @require_properties
 @require_context
 def get_property_c_lines(ctx, category):
-  # Prepare properties lines
-  property_lines = []
-  for key, val in ctx['properties'][category].items():
-    prop = '_'.join(key.split())
-    if val is not None:
-      prop += ' ' + str(val)
-    line = '#property {}'.format(prop)
-    property_lines.append(line)
-  return property_lines
+    # Prepare properties lines
+    property_lines = []
+    for key, val in ctx['properties'][category].items():
+        prop = '_'.join(key.split())
+        if val is not None:
+            prop += ' ' + str(val)
+        line = '#property {}'.format(prop)
+        property_lines.append(line)
+    return property_lines
+
 
 def get_common_property_c_lines():
-  return get_property_c_lines('common')
+    return get_property_c_lines('common')
+
 
 def get_indicator_property_c_lines():
-  return get_property_c_lines('indicator')
+    return get_property_c_lines('indicator')
+
 
 def get_expert_property_c_lines():
-  return get_property_c_lines('expert')
+    return get_property_c_lines('expert')
+
 
 @require_buffers
 @require_context
 def get_buffer_property_c_lines(ctx):
-  property_buffers = []
-  for i, buffer in enumerate(ctx['buffers']):
-    lines = []
-    for key in buffer.keys():
-      val = buffer[key]
-      # special conditions
-      if val is None: continue
-      if key.endswith('color'):
-        pass # do nothing to val
-      elif key.endswith('style'):
-        val = 'STYLE_' + val.upper()
-      elif type(val) is str:
-        val = '"{}"'.format(val)
-      #generate the line
-      prop = '_'.join(key.split())
-      line = "#property indicator_{}{} {}".format(prop, i+1, val)
-      lines.append(line)
-    property_buffers.append(lines)
-  return property_buffers
+    property_buffers = []
+    for i, buffer in enumerate(ctx['buffers']):
+        lines = []
+        for key in buffer.keys():
+            val = buffer[key]
+            # special conditions
+            if val is None: continue
+            if key.endswith('color'):
+                pass  # do nothing to val
+            elif key.endswith('style'):
+                val = 'STYLE_' + val.upper()
+            elif type(val) is str:
+                val = '"{}"'.format(val)
+            # generate the line
+            prop = '_'.join(key.split())
+            line = "#property indicator_{}{} {}".format(prop, i + 1, val)
+            lines.append(line)
+        property_buffers.append(lines)
+    return property_buffers
+
 
 @require_properties
 @require_context
 def get_input_c_lines(ctx):
-  return ctx['properties']['inputs']
+    return ctx['properties']['inputs']
+
 
 @require_buffers
 @require_context
 def get_buffer_register_lines(ctx):
-  lines = []
-  for i, buffer in enumerate(ctx['buffers']):
-    name = buffer['name'] if 'name' in buffer.keys() else 'AutoGeneratedBuffer' + str(i)
-    print(name)
-    name = ''.join([x.capitalize() for x in name.split()])
-    print(name)
-    line = "SetIndexBuffer({}, {}Buffer);".format(i, name)
-    lines.append(line)
-  return lines
+    lines = []
+    for i, buffer in enumerate(ctx['buffers']):
+        name = buffer['name'] if 'name' in buffer.keys() else 'AutoGeneratedBuffer' + str(i)
+        print(name)
+        name = ''.join([x.capitalize() for x in name.split()])
+        print(name)
+        line = "SetIndexBuffer({}, {}Buffer);".format(i, name)
+        lines.append(line)
+    return lines
+
 
 @require_buffers
 @require_context
 def get_buffer_name_lines(ctx):
-  lines = []
-  for buffer in ctx['buffers']:
-    name = buffer['name'] if 'name' in buffer.keys() else 'AutoGeneratedBuffer' + str(i)
-    name = ''.join([x.capitalize() for x in name.split()])
-    line = "double {}Buffer[];".format(name)
-    lines.append(line)
-  return lines
+    lines = []
+    for buffer in ctx['buffers']:
+        name = buffer['name'] if 'name' in buffer.keys() else 'AutoGeneratedBuffer' + str(i)
+        name = ''.join([x.capitalize() for x in name.split()])
+        line = "double {}Buffer[];".format(name)
+        lines.append(line)
+    return lines
+
 
 # Actionable code #############################################################
 
@@ -157,86 +184,99 @@ def get_buffer_name_lines(ctx):
 @require_buffers
 @require_context
 def generate_mlq_expert(ctx):
-  """Generates the full MQL4 code for the expert"""
-  pass
+    """Generates the full MQL4 code for the expert"""
+    pass
+
 
 @require_buffers
 @require_properties
 @require_context
 def generate_mlq_indicator(ctx):
-  # construct the indicator context
-  indicator_ctx =                       IndicatorContext(ctx['properties']['name'])
-  indicator_ctx.property_lines =        get_common_property_c_lines()
-  indicator_ctx.property_buffers =      get_buffer_property_c_lines()
-  indicator_ctx.buffer_register_lines = get_buffer_register_lines()
-  indicator_ctx.buffer_name_lines =    get_buffer_name_lines()
-  indicator_ctx.input_lines =           get_input_c_lines()
+    # construct the indicator context
+    indicator_ctx = IndicatorContext(ctx['properties']['name'])
+    indicator_ctx.property_lines = get_common_property_c_lines()
+    indicator_ctx.property_buffers = get_buffer_property_c_lines()
+    indicator_ctx.buffer_register_lines = get_buffer_register_lines()
+    indicator_ctx.buffer_name_lines = get_buffer_name_lines()
+    indicator_ctx.input_lines = get_input_c_lines()
 
-  # Write from template
-  with open('templates/Indicator.cpp', 'r') as fin:
-    template = Template(fin.read())
-    code = template.render(ctx=indicator_ctx)
-  return code
+    # Write from template
+    with open('templates/Indicator.cpp', 'r') as fin:
+        template = Template(fin.read())
+        code = template.render(ctx=indicator_ctx)
+    return code
+
 
 @require_buffers
 @require_properties
 @require_function_translator
 @require_context
 def generate_mql_expert(ctx):
-  class ExpertContext:
-    """Class to be passed to the template"""
-    def __init__(self):
-      self.property_buffers = get_buffer_property_c_lines()
-      self.buffer_register_lines = get_buffer_register_lines()
-      self.property_lines = get_common_property_c_lines()
-      self.name = ctx['properties']['name']
-      self.input_lines = get_input_c_lines()
-      self.ft = ctx['function_translator']
+    class ExpertContext:
+        """Class to be passed to the template"""
 
-  # Write from template
-  with open('templates/Expert.cpp', 'r') as fin:
-    template = Template(fin.read())
-    code = template.render(ctx=ExpertContext())
-  return code
+        def __init__(self):
+            self.property_buffers = get_buffer_property_c_lines()
+            self.buffer_register_lines = get_buffer_register_lines()
+            self.property_lines = get_common_property_c_lines()
+            self.name = ctx['properties']['name']
+            self.input_lines = get_input_c_lines()
+            self.ft = ctx['function_translator']
+
+    # Write from template
+    with open('templates/Expert.cpp', 'r') as fin:
+        template = Template(fin.read())
+        code = template.render(ctx=ExpertContext())
+    return code
+
 
 def generate_dll_indicator(): pass
+
+
 def generate_mql_buffers(): pass
+
+
 def generate_dll_buffers(): pass
+
+
 def generate_mql_ft(): pass
+
+
 def generate_dll_ft(): pass
+
 
 @require_functions
 @require_context
 def generate_mql_functions(ctx):
-  code = ""
-  functions = ctx["functions"]
-  func_dict_by_namespace = {}
-  for function in functions:
-    if function is not None:
-      if function.getNamespace() not in func_dict_by_namespace.keys():
-        func_dict_by_namespace[function.getNamespace()] = []
-      func_dict_by_namespace[function.getNamespace()].append(function)
+    code = ""
+    functions = ctx["functions"]
+    func_dict_by_namespace = {}
+    for function in functions:
+        if function is not None:
+            if function.getNamespace() not in func_dict_by_namespace.keys():
+                func_dict_by_namespace[function.getNamespace()] = []
+            func_dict_by_namespace[function.getNamespace()].append(function)
 
-  # Write from template
-  with open('templates/MQLFunctions.cpp', 'r') as fin:
-    template = Template(fin.read())
-    code = template.render(func_dict_by_namespace=func_dict_by_namespace)
-  return code
+    # Write from template
+    with open('templates/MQLFunctions.cpp', 'r') as fin:
+        template = Template(fin.read())
+        code = template.render(func_dict_by_namespace=func_dict_by_namespace)
+    return code
+
 
 @require_functions
 @require_context
 def generate_expert_cpp(ctx):
-  functions = ctx["functions"]
-  
+    functions = ctx["functions"]
+
 
 def generate_all():
+    code = generate_mql_expert()
+    with open('../output/Expert.cpp', 'w') as fout:
+        fout.write(code)
 
-  code = generate_mql_expert()
-  with open('../output/Expert.cpp', 'w') as fout:
-    fout.write(code)
+    code = generate_mql_functions()
+    with open('../output/mql4.cpp', 'w') as fout:
+        fout.write(code)
 
-  code = generate_mql_functions()
-  with open('../output/mql4.cpp', 'w') as fout:
-    fout.write(code)
-
-  return
+    return
