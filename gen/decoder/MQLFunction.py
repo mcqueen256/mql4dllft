@@ -73,7 +73,7 @@ class MQLFunction:
   def setReturnType(self, newReturnType):
     """Sets the return type of the function."""
     if newReturnType is not None:
-      self._return_type = newReturnType.replace('string', 'char*')
+      self._return_type = newReturnType # .replace('string', 'char*')
     else:
       self._return_type = None
 
@@ -110,7 +110,7 @@ class MQLFunction:
     """Returns C++ code for the parameters."""
     def form_param(param):
       t, n, d, c = param
-      t = t.replace('char*', 'std::string')
+      #t = t.replace('char*', 'std::string')
       if d is None:
         return '{} {}'.format(t, n)
       else:
