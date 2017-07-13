@@ -8,6 +8,8 @@ namespace mql {
 		{% for t, n in ft.get_result_dict().items() -%}
             {{ t }} _result{{ n }};
 		{% endfor %}
+		int action;
+		std::function<void(void)> toCalling;
     public:
         RobotReferenceType getInstance();
 		{% for t, n in ft.get_param_dict_without_refs().items() -%}
@@ -22,7 +24,13 @@ namespace mql {
 		{% for t, n in ft.get_result_dict().items() -%}
             void set{{ n }}Result({{ t }} result);
 		{% endfor %}
+		void setAction(int a);
+		int getAction();
+		void switchToCalling();
+		void setSwitchToCalling(std::function<void(void)> func);
     };
+
+    class MQL4APIInstance;
 
 	{%- for namespace in namespaces.keys() %}
 	class {{ namespace | title }} {
@@ -35,7 +43,6 @@ namespace mql {
 		{% for function in namespaces[namespace] -%}
 		    {{ function.getReturnTypeDLL() }} {{ function.getName() }}({{ function.getParameterLine() }});
 		{% endfor %}
-		void destroyAPIInstance();
 	};
 	{% endfor %}
 
@@ -43,13 +50,15 @@ namespace mql {
 	private:
 		{% for namespace in namespaces.keys() -%}
 		    {{ namespace | title }}* _{{ namespace }}_ref;
-		{%- endfor %}
+		{% endfor %}
+		MQLInterface interface;
 	public:
 		MQL4APIInstance(RobotReferenceType instance);
 		~MQL4APIInstance();
 		{% for namespace in namespaces.keys() -%}
 		    {{ namespace | title }}& {{ namespace }}();
 		{% endfor %}
+		MQLInterface& getInterface();
 	};
 }
 
