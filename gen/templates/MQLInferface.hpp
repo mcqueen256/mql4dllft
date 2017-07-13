@@ -2,7 +2,28 @@
 #ifndef MQLINTERFACE_HPP
 #define MQLINTERFACE_HPP
 
-namespace MQLInterface {
+namespace mql {
+    class MQLInterface {
+    private:
+		{% for t, n in ft.get_result_dict().items() -%}
+            {{ t }} _result{{ n }};
+		{% endfor %}
+    public:
+        RobotReferenceType getInstance();
+		{% for t, n in ft.get_param_dict_without_refs().items() -%}
+            std::queue<{{ t }}> param{{ n }}Queue;
+		{% endfor %}
+		{% for t, n in ft.get_reference_dict_without_refs().items() -%}
+            std::queue<{{ t }}> ref{{ n }}Queue;
+		{% endfor %}
+		{% for t, n in ft.get_result_dict().items() -%}
+            {{ t }} get{{ n }}Result();
+		{% endfor %}
+		{% for t, n in ft.get_result_dict().items() -%}
+            void set{{ n }}Result({{ t }} result);
+		{% endfor %}
+    };
+
 	{%- for namespace in namespaces.keys() %}
 	class {{ namespace | title }} {
 	private:
@@ -28,16 +49,6 @@ namespace MQLInterface {
 		~MQL4APIInstance();
 		{% for namespace in namespaces.keys() -%}
 		    {{ namespace | title }}& {{ namespace }}();
-		{%- endfor %}
-		RobotReferenceType getInstance();
-		{% for t, n in ft._paramStackTypePushMathods.items() -%}
-            void {{ ft.get_param_stack_type_push_line(t, t) }}
-		{% endfor %}
-		{% for t, n in ft._result_type_getters.items() -%}
-            void {{ ft.get_result_type(t) }}({{ t }});
-		{% endfor %}
-		{% for t, n in ft._reference_setters.items() -%}
-            void {{ ft.get_reference_setter(t) }}({{ t }});
 		{% endfor %}
 	};
 }
