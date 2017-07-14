@@ -98,7 +98,29 @@ void send_quote(int instance, string time, double open, double high, double low,
 void process_action(int action) {
 	while(true) {
 		switch(action) {
-
+		    case ACTION_END:
+		        setActionEnd(robot_instance);
+		        return;
+            {% for namespace, function_list in namespaces.items() -%}
+                {% for function in function_list -%}
+                case {{ function.getIndex() }}:
+                    {% for t, n, d, c in function.getParameters() -%}
+                        {{ t.replace('&', '') }} p{{ loop.index }} = getParam{{ ft.get_type_to_param_name(t) }}(robot_instance);
+                    {% endfor %}
+                    {%- if function.getReturnType() == 'void' -%}
+                        {{ function.getName() }}({{ function.getMQLSwitchInlineParametersline() }});
+                    {%- else -%}
+                        {{ function.getReturnType() }} result = {{ function.getName() }}({{ function.getMQLSwitchInlineParametersline() }});
+                    {%- endif %}
+                    {%- for t, n, d, c in function.getParameters() -%}
+                    {%- if  '&' in t %}
+                    set{{ ft.get_type_to_param_name(t) }}Reference(robot_instance, p{{ loop.index }});
+                    {%- endif -%}
+                    {%- endfor %}
+                    action = set{{ ft.get_type_to_result_name(function.getReturnType()) }}Return(robot_instance, result);
+                    return;
+                {% endfor %}
+            {% endfor %}
 		}
 	}
 }

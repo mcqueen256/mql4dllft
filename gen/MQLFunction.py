@@ -129,6 +129,12 @@ class MQLFunction:
                 params.append(param)
         return params
 
+    def getMQLSwitchInlineParametersline(self):
+        ps = []
+        for i, param in enumerate(self._parameters):
+            ps.append('p{}'.format(i + 1))
+        return ', '.join(ps)
+
     def copy(self):
         """Create a unique copy based of this parameter."""
         function = MQLFunction()

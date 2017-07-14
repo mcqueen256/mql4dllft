@@ -13,9 +13,9 @@ class FunctionTranslator(object):
                 if t not in self._parameter_types:
                     self._parameter_types.append(t)
 
-        self._param_stack_type_to_names = {}
+        self._param_type_to_names = {}
         for t in self._parameter_types:
-            self._param_stack_type_to_names[t] = self.refactor(t.replace('&', ''))
+            self._param_type_to_names[t] = self.refactor(t.replace('&', ''))
 
         self._result_type_to_names = {}
         for t in self._return_types:
@@ -28,7 +28,7 @@ class FunctionTranslator(object):
             self._reference_type_to_name[t] = self.refactor(t)
 
     def get_param_stack_type_names(self):
-        return self._param_stack_type_to_names.values()
+        return self._param_type_to_names.values()
 
     def get_result_type_names(self):
         return self._result_type_to_names.values()
@@ -36,8 +36,8 @@ class FunctionTranslator(object):
     def get_reference_type_names(self):
         return self._reference_type_to_name.values()
 
-    def get_type_to_param_stack_name(self, t: str) -> str:
-        return self._param_stack_type_to_names[t]
+    def get_type_to_param_name(self, t: str) -> str:
+        return self._param_type_to_names[t]
 
     def get_type_to_result_name(self, t: str) -> str:
         return self._result_type_to_names[t]
@@ -46,7 +46,7 @@ class FunctionTranslator(object):
         return self._reference_type_to_name[t]
 
     def get_param_dict(self):
-        return self._param_stack_type_to_names
+        return self._param_type_to_names
 
     def get_result_dict(self):
         return self._result_type_to_names
@@ -55,14 +55,14 @@ class FunctionTranslator(object):
         return self._reference_type_to_name
 
     def get_param_dict_without_refs(self):
-        keys = self._param_stack_type_to_names
+        keys = self._param_type_to_names
         new_keys = []
         for key in keys:
             if '&' not in key:
                 new_keys.append(key)
         new_dict = {}
         for key in new_keys:
-            new_dict[key] = self._param_stack_type_to_names[key]
+            new_dict[key] = self._param_type_to_names[key]
         return new_dict
 
     def get_reference_dict_without_refs(self):

@@ -46,7 +46,7 @@ mql::{{ namespace | title }}::~{{ namespace | title }}() {
     std::unique_lock<std::mutex> lck(*(this->api)); // only have ony mlq function run at a time
     //push parameters onto the stack
     {% for t, n, d, c in function.getParameters() -%}
-        this->api->getInterface().param{{ ft.get_type_to_param_stack_name(t) }}Queue.push({{ n }});
+        this->api->getInterface().param{{ ft.get_type_to_param_name(t) }}Queue.push({{ n }});
     {% endfor -%}
     this->api->getInterface().setAction({{ function.getIndex() }});
     this->api->getInterface().switchToCalling();
