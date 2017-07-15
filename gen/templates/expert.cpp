@@ -7,21 +7,30 @@
 {% for line in expert.input_lines -%}
 input {{ line }};
 {%- endfor %}
+input string robot_name = "{{ expert.name }}";
 
 /* Globals ------------------------------------------------------------------ */
-int robot_instance;
+#define RobotReferenceType long
+RobotReferenceType robot_instance;
 unsigned int bar_checksum = 0;
 
 /* Libraries ---------------------------------------------------------------- */
 /* DLL Functions ----------------------------------------------------------- */
 #import "{{ expert.name }}.dll"
-int initialise(int instance);
-void deinitialise(int instance, const int reason);
-void enableTrading(int instance);
-void disableTrading(int instance);
-int bar(int instance, string time, double open, double high, double low, double close, double volume);
-int quote(int instance, string time, double open, double high, double low, double close, double volume);
+RobotReferenceType initialise(robot_name);
+void deinitialise(RobotReferenceType instance, const int reason);
+int bar(RobotReferenceType instance, string time, double open, double high, double low, double close, double volume);
+int quote(RobotReferenceType instance, string time, double open, double high, double low, double close, double volume);
 
+{% for t, name in ft.get_param_dict_without_refs().items() -%}
+{{ t }} getParam{{ name }}(RobotReferenceType instance);
+{% endfor %}
+{% for t, name in ft.get_reference_dict_without_refs().items() -%}
+void set{{ name }}Reference(RobotReferenceType instance, {{ t }} parameter);
+{% endfor %}
+{% for t, name in ft.get_result_dict().items() -%}
+{{ t }} set{{ name }}Return(RobotReferenceType instance, {{ t }} result);
+{% endfor %}
 
 #import
 
