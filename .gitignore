@@ -42,3 +42,4 @@ output/*
 test_src/catch.hpp
 gen/.idea/
 src/
+previous_project/output/*
