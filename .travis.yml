@@ -2,5 +2,12 @@ language: cpp
 compiler:
   - clang
   - gcc
+os:
+- linux
+- osx
 python: 3.5.0
+
+before_install: true
+install: true
+before_script: true
 script: scons
