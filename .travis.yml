@@ -1,0 +1,6 @@
+language: cpp
+compiler:
+  - clang
+  - gcc
+python: 3.5.0
+script: scons
