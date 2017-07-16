@@ -17,7 +17,7 @@ unsigned int bar_checksum = 0;
 /* Libraries ---------------------------------------------------------------- */
 /* DLL Functions ----------------------------------------------------------- */
 #import "{{ expert.name }}.dll"
-RobotReferenceType initialise(robot_name);
+RobotReferenceType initialise(string robot_name);
 void deinitialise(RobotReferenceType instance, const int reason);
 int bar(RobotReferenceType instance, string time, double open, double high, double low, double close, double volume);
 int quote(RobotReferenceType instance, string time, double open, double high, double low, double close, double volume);
@@ -31,6 +31,7 @@ void set{{ name }}Reference(RobotReferenceType instance, {{ t }} parameter);
 {% for t, name in ft.get_result_dict().items() -%}
 {{ t }} set{{ name }}Return(RobotReferenceType instance, {{ t }} result);
 {% endfor %}
+void setActionEnd(RobotReferenceType instance);
 
 #import
 
@@ -113,6 +114,7 @@ void process_action(int action) {
             {% for namespace, function_list in namespaces.items() -%}
                 {% for function in function_list -%}
                 case {{ function.getIndex() }}:
+                	{
                     {% for t, n, d, c in function.getParameters() -%}
                         {{ t.replace('&', '') }} p{{ loop.index }} = getParam{{ ft.get_type_to_param_name(t) }}(robot_instance);
                     {% endfor %}
@@ -128,6 +130,7 @@ void process_action(int action) {
                     {%- endfor %}
                     action = set{{ ft.get_type_to_result_name(function.getReturnType()) }}Return(robot_instance, result);
                     return;
+                	}
                 {% endfor %}
             {% endfor %}
 		}

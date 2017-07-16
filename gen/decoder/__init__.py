@@ -37,6 +37,7 @@ def decode_functions() -> List[MQLFunction]:
             for t, n, d, c in function.getParameters():
                 # looking for (None, '...', None, None)
                 if t is None and d is None and c is None and n == '...':
+                    print("dupping needed", function.getName())
                     need_dupping = True
                     continue
                 if need_dupping:
@@ -44,6 +45,7 @@ def decode_functions() -> List[MQLFunction]:
                     dups.append(param)
             # if in need of duplication, do it now
             if need_dupping:
+                print("dupping required", function.getName())
                 bear_params = function.getParameters()[:-(len(dups) * 2 + 1)]
                 for maximum in range(1, core.settings["DUP_LEVEL"] + 1):
                     f = function.copy()
@@ -78,8 +80,10 @@ def get_mql_function(html, filename):
     if '.'.join(tag_names).startswith('h1.p.div.p'):
         f = page_decode_normal(tags)
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.div.p'):
+        print('process double code block', filename)
         pass  # print('process double code block', filename)
     elif '.'.join(tag_names).startswith('h1.p.p.div.p.p.p.p.p.br'):
+        print('process other code block', filename)
         pass  # getlasterror
     # TODO: throw error for none instances
     if f is not None: f.setNamespace(filename.split('.')[0])

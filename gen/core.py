@@ -223,17 +223,12 @@ def get_template_context():
     return ctx
 
 def generate_all():
-    # code = generate_mql_expert()
-    # with open('../output/Expert.cpp', 'w') as fout:
-    #     fout.write(code)
-    #
-    # code = generate_mql_functions()
-    # with open('../output/mql4.cpp', 'w') as fout:
-    #     fout.write(code)
+    template_context = get_template_context()
+
     files = [file for file in os.listdir('templates') if not file.startswith('.')]
     for file_name in files:
         with open('templates/' + file_name, 'r') as fin:
             with open('../src/' + file_name, 'w') as fout:
                 template = Template(fin.read())
-                fout.write(template.render(**get_template_context()))
+                fout.write(template.render(**template_context))
     return

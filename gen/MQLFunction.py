@@ -146,3 +146,32 @@ class MQLFunction:
         function._note = self._note
         function._namespace = self._namespace
         return function
+
+    def as_dict(self):
+        dic = {
+            'name': self._name,
+            'namespace': self._namespace,
+            'return_type': self._return_type,
+            'parameters': self._parameters[:],
+            'comment': self._comment,
+            'return_comment': self._return_comment,
+            'note': self._note,
+        }
+        return dic
+
+    @classmethod
+    def from_dict(cls, dic):
+        f = MQLFunction()
+        f._return_type = dic['return_type']
+        f._name = dic['name']
+        f._parameters = dic['parameters']
+        f._comment = dic['comment']
+        f._return_comment = dic['return_comment']
+        f._note = dic['note']
+        f._namespace = dic['namespace']
+        return f
+
+
+
+
+

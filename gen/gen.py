@@ -11,6 +11,8 @@ from bs4.element import Tag
 import logging
 import core
 
+from APIFunction import generate_new_json_file
+
 
 @click.group(invoke_without_command=True)
 @click.option('--verbos', is_flag=True, help='Turn on verbos output (show all the details).')
@@ -78,6 +80,12 @@ def download_api(ctx):
 @click.pass_context
 def generate_output(ctx):
     core.generate_all()
+
+@cli.command('gen-functions', help='from the html files, generate a json list of api functions')
+def generate_functions():
+    generate_new_json_file()
+
+
 
 
 @cli.command('test', help="Test this program.")
