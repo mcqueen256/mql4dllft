@@ -13,7 +13,7 @@ addons:
   sonarcloud:
     organization: "mcqueen256-github"
     token:
-      secure: "$SONAR_CLOUD_ENCRYPTED_KEY"
+      secure: "zEJiBzAo5/Vvy3wEdvnCJ0WgLSBYan1sNluDqSbxJxOB8lpCmdR2BTpsH/QHbyOIW+SG9NhQYzMgUVwPOWsOy1Q52Lv64DHc6P/DKIpYE7uBzbeds5BQYWsrK6P883oEXdoDzNhbdts9peKqmhzRLcmOyebbnP4ZSyZ4dGVKyaV0vZDJhwLtpXolRYWYqptjWD/ojHLBNEKAmRnwrLVrLqrfeQcV+s5ZcO0aqvxWVKSGcgU1nrxdgcHSTdgkH+GnotxGrxgkOOdfPXE6JUnctfM0Q3NjDeFaDuKmRZ5h7SsDv/2wonU5I/cpic4m/wyR4WhRRXqU4DXPrbOP8xaXL80vBrkMIrvSLWSW8kAO41sPcTFfrfElfkOXvb2oN+QFXmuIFMP0ZV/Dwkzl2gFh65sTvKlNc5lkamHdHz312FHT203Z7S8XhYH78f3A8iGcQiHmIB6O6dFc+cdB9RnxUjDIu/sU9Dp4s6Y1aZQbkSrF/TYR+s3WgYXyP0HB9bbdF7dFn9YhJyM1ahcqYdWOyWWn/Da/l9tCJYbtziec6/afQMJSeKGHm+gJLhX+ok1na4qez6nfOn4WVyzQDkOko4dzGr9uvyskyp4FU3CReOFgzSe2M/fVXPD2PaGKPavc2nzo9Rl5hayjZYRf784DF5Pl3HMgQCn2kYIySxlELKM="
 
 before_install:
   - pip install --user cpp-coveralls
