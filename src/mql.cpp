@@ -1,8 +1,6 @@
 #include <iostream>
 
-void f() {
-	std::cout << "f()" << std::endl;
-}
+void f();
 
 int sum(int a, int b) {
 	int* c = new int;
@@ -10,7 +8,7 @@ int sum(int a, int b) {
 	return *c + b;
 }
 
-int main(int args, char* argv[]) {
+int main2(int args, char* argv[]) {
 	std::cout << sum(1, 2) << std::endl;
 	return 0;
 }

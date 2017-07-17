@@ -8,8 +8,6 @@ compiler:
   - clang
   - gcc
 
-
-
 addons:
   sonarcloud:
     organization: "mcqueen256-github"
