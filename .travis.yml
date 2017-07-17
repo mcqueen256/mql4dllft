@@ -1,18 +1,17 @@
 language: cpp
 sudo: false
+os: linux
+python: 3.6.0
 
 compiler:
   - clang
   - gcc
 
-os:
-  - linux
 
-python: 3.6.0
 
 addons:
   sonarcloud:
-    organization: "your_organization_key"
+    organization: "mcqueen256-github"
     token:
       secure: "$SONAR_CLOUD_ENCRYPTED_KEY"
 
@@ -27,6 +26,7 @@ after_success:
   - ./mql.out
   - ls -lart
   - coveralls --gcov-options '\-lp'
+
 cache:
   directories:
     - '$HOME/.sonar/cache'
