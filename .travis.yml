@@ -21,7 +21,7 @@ before_install:
 install: true
 before_script: true
 script:
-  - build-wrapper --out-dir build scons
+  - scons
   - sonar-scanner
 after_success:
   - ./mql.out
