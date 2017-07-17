@@ -23,7 +23,7 @@ before_script: true
 script:
   - build-wrapper-linux-x86-64 --out-dir bw-output scons
   - sonar-scanner
-  - valgrind --error-exitcode=42 --leak-check=full ./mql.out
+  - valgrind --error-exitcode=42 --leak-check=full ./mql4dllft
 after_success:
   - ls -lart
   - coveralls --gcov-options '\-lp'
