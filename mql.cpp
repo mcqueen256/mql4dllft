@@ -5,7 +5,9 @@ void f() {
 }
 
 int sum(int a, int b) {
-	return a + b;
+	int* c = new int;
+	*c = a;
+	return *c + b;
 }
 
 int main(int args, char* argv[]) {
