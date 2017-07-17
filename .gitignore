@@ -9,6 +9,7 @@
 
 # Build output
 .sconsign.dblite
+*.gcno
 
 # Compiled Static libraries
 *.lai

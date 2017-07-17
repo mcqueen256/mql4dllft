@@ -6,11 +6,14 @@ compiler:
   - gcc
 
 os:
-- linux
+  - linux
 
 python: 3.5.0
 
-before_install: true
+before_install:
+  - pip install --user cpp-coveralls
 install: true
 before_script: true
 script: scons
+after_success:
+  - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
