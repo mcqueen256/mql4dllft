@@ -2,6 +2,7 @@ language: cpp
 sudo: false
 os: linux
 python: 3.6.0
+java: 8
 
 compiler:
   - clang
