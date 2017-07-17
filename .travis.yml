@@ -1,5 +1,5 @@
 language: cpp
-sudo: false
+sudo: required
 
 compiler:
   - clang
@@ -10,12 +10,23 @@ os:
 
 python: 3.6.0
 
+addons:
+  sonarcloud:
+    organization: "your_organization_key"
+    token:
+      secure: "$SONAR_CLOUD_ENCRYPTED_KEY"
+
 before_install:
   - pip install --user cpp-coveralls
 install: true
 before_script: true
-script: scons
+script:
+  - scons
+  - sonar-scanner
 after_success:
   - ./mql.out
   - ls -lart
   - coveralls --gcov-options '\-lp'
+cache:
+  directories:
+    - '$HOME/.sonar/cache'
