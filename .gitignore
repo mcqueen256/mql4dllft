@@ -7,18 +7,8 @@
 *.o
 *.obj
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
+# Build output
+.sconsign.dblite
 
 # Compiled Static libraries
 *.lai
@@ -31,15 +21,3 @@
 *.out
 *.app
 
-# Python
-venv/
-api/
-__pycashe__/
-
-# logging
-example.log
-output/*
-test_src/catch.hpp
-gen/.idea/
-src/
-previous_project/output/*
