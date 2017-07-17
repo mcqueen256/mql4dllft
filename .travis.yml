@@ -16,4 +16,5 @@ install: true
 before_script: true
 script: scons
 after_success:
+  - ./mql.out
   - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
