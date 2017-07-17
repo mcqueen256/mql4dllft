@@ -1,5 +1,5 @@
 language: cpp
-sudo: requied
+sudo: true
 os: linux
 python: 3.6.0
 
@@ -18,7 +18,7 @@ addons:
 before_install:
   - pip install --user cpp-coveralls
   - jdk_switcher use oraclejdk8
-  - apt-get install valgrind
+  - sudo apt-get install valgrind
 install: true
 before_script: true
 script:
