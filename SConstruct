@@ -4,7 +4,7 @@ test_env = Environment()
 test_env.Append(CXXFLAGS='-g -O0 -fprofile-arcs -ftest-coverage -std=c++11 -Wall -pedantic -I./include/ -I./test/include/')
 
 optimised_env = Environment()
-optimised_env.Append(CXXFLAGS='-g -std=c++11 -O0 -I./include/ -I./test/include/')
+optimised_env.Append(CXXFLAGS='-std=c++11 -O3 -I./test/include/')
 optimised_env.Append(LINKFLAGS= '--coverage -pthread -lgcov') # -lgcov for linux
 
 src_dir = 'src/'
