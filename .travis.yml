@@ -160,6 +160,6 @@ after_success:
 after_failure:
   - coveralls --gcov-options '\-lp'
 
-#cache:
-#  directories:
-#    - '$HOME/.sonar/cache'
+cache:
+  directories:
+    - '$HOME/.sonar/cache'
