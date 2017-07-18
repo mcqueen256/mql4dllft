@@ -27,7 +27,6 @@ script:
 after_success:
   - ls -lart
   - coveralls --gcov-options '\-lp'
-  - valgrind --error-exitcode=42 --leak-check=full ./mql4dllft
 
 cache:
   directories:

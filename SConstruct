@@ -8,8 +8,7 @@ optimised_env.Append(CXXFLAGS='-g -std=c++11 -O0 -I./include/ -I./test/include/'
 optimised_env.Append(LINKFLAGS= '--coverage -pthread') # -lgcov for linux
 
 src_dir = 'src/'
-catch_test_src_dir = 'test/catch_src/'
-mem_test_src_dir = 'test/mem_src/'
+test_src_dir = 'test/src/'
 test_dir = 'test/'
 build_dir = 'build/'
 
@@ -29,9 +28,9 @@ for file in cpp_dir(src_dir):
 
 # Test case objects
 case_test_objects = []
-for file in cpp_dir(catch_test_src_dir):
+for file in cpp_dir(test_src_dir):
 	t_name = '.'.join([file.split('.')[0], 'test', 'out'])
-	obj = test_env.Object(target=t_name, source=file, srcdir=catch_test_src_dir)
+	obj = test_env.Object(target=t_name, source=file, srcdir=test_src_dir)
 	case_test_objects.extend(obj)
 
 # The catch code including main
@@ -43,26 +42,8 @@ cleaning_map = {}
 for file in cpp_dir(src_dir):
 	cleaning_map[file.split('.')[0] + '.test.gcda'] = obj
 	cleaning_map[file.split('.')[0] + '.test.gcno'] = obj
-for file in cpp_dir(catch_test_src_dir):
+for file in cpp_dir(test_src_dir):
 	cleaning_map[file.split('.')[0] + '.test.gcda'] = obj
 	cleaning_map[file.split('.')[0] + '.test.gcno'] = obj
 for file, node in cleaning_map.iteritems():
 	Clean(node, file)
-
-
-# Object files for robot code without coverage
-project_objects = []
-for file in cpp_dir(src_dir):
-	obj = optimised_env.Object(target=file+'.o', source=file, srcdir=src_dir)
-	project_objects.extend(obj)
-
-# Test case programs
-for file in cpp_dir(catch_test_src_dir):
-	t_name = '.'.join([file.split('.')[0], 'test'])
-	optimised_env.Program(target=build_dir + t_name, source=[file] + main_test_object + project_objects, srcdir=catch_test_src_dir)
-
-# Memory leaks test programs
-for file in cpp_dir(mem_test_src_dir):
-	t_name = '.'.join([file.split('.')[0], 'memtest'])
-	optimised_env.Program(target=build_dir + t_name, source=[file] + project_objects, srcdir=mem_test_src_dir)
-

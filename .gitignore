@@ -10,6 +10,7 @@
 # Build output
 .sconsign.dblite
 *.gcno
+*.gcda
 build/
 
 # Compiled Static libraries
