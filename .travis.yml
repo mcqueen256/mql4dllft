@@ -2,48 +2,15 @@ language: cpp
 dist: trusty
 sudo: false
 os: linux
-python: 3.6.0
+
+addons:
+  sonarcloud:
+    organization: "mcqueen256-github"
+    token:
+      secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
 
 
-matrix:
-  include:
-    - sonarcloud:
-      organization: "mcqueen256-github"
-        token:
-          secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
 
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-      env:
-        - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
-      env:
-         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-      env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
 before_install:
   - eval "${MATRIX_EVAL}"
