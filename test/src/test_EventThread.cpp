@@ -163,6 +163,29 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	    std::runtime_error* exception_from_the_event_thread;
 
 	    // class functions
+
+		auto join = [&]() {
+		    allocation_mtx.lock();
+		    delete calling_lock; // remove lock on this thread, allow event to run
+		    calling_lock = nullptr;
+		    allocation_mtx.unlock();
+		    if (event_lock != nullptr) {
+		        event_waiter.notify_one();
+		        std::this_thread::yield();
+		    }
+		    event_thread.join();
+		    if (exception_from_the_event_thread != nullptr) {
+		        /* an exception occured */
+		        std::runtime_error e_copy(exception_from_the_event_thread->what());
+		        allocation_mtx.lock();
+		        delete exception_from_the_event_thread;
+		        exception_from_the_event_thread = nullptr;
+		        allocation_mtx.unlock();
+		        throw e_copy;
+		    }
+		    deallocate();
+		};
+		
 	    auto switchToCallingThread = [&]() {
 		    if (!require_switch_from_event) {
 		        throw std::runtime_error("switch to calling not matched with a switch to event");
@@ -191,28 +214,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
 		        join();
 		    }
-		};
-
-		auto join = [&]() {
-		    allocation_mtx.lock();
-		    delete calling_lock; // remove lock on this thread, allow event to run
-		    calling_lock = nullptr;
-		    allocation_mtx.unlock();
-		    if (event_lock != nullptr) {
-		        event_waiter.notify_one();
-		        std::this_thread::yield();
-		    }
-		    event_thread.join();
-		    if (exception_from_the_event_thread != nullptr) {
-		        /* an exception occured */
-		        std::runtime_error e_copy(exception_from_the_event_thread->what());
-		        allocation_mtx.lock();
-		        delete exception_from_the_event_thread;
-		        exception_from_the_event_thread = nullptr;
-		        allocation_mtx.unlock();
-		        throw e_copy;
-		    }
-		    deallocate();
 		};
 
 		auto deallocate = [&]() {
