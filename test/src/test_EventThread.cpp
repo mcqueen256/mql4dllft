@@ -36,6 +36,20 @@ EventThreader::~EventThreader() {
 }
 
 void EventThreader::deallocate() {
+	allocation_mtx.lock();
+	if (exception_from_the_event_thread != nullptr) {
+		delete exception_from_the_event_thread;
+		exception_from_the_event_thread = nullptr;
+	}
+	if (calling_lock != nullptr) {
+		delete calling_lock;
+		calling_lock = nullptr;
+	}
+	if (event_lock != nullptr) {
+		delete event_lock;
+		event_lock = nullptr;
+	}
+	allocation_mtx.unlock();
 }
 
 void EventThreader::switchToCallingThread() {
@@ -61,20 +75,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	    // class functions
 
 		auto deallocate = [&]() {
-		    et.allocation_mtx.lock();
-			if (et.exception_from_the_event_thread != nullptr) {
-				delete et.exception_from_the_event_thread;
-				et.exception_from_the_event_thread = nullptr;
-			}
-			if (et.calling_lock != nullptr) {
-				delete et.calling_lock;
-				et.calling_lock = nullptr;
-			}
-			if (et.event_lock != nullptr) {
-				delete et.event_lock;
-				et.event_lock = nullptr;
-			}
-			et.allocation_mtx.unlock();
+		   et.deallocate();
 		};
 
 		auto join = [&]() {
