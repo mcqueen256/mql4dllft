@@ -59,6 +59,25 @@ void EventThreader::switchToEventThread() {
 }
 
 void EventThreader::join() {
+	allocation_mtx.lock();
+    delete calling_lock; // remove lock on this thread, allow event to run
+    calling_lock = nullptr;
+    allocation_mtx.unlock();
+    if (event_lock != nullptr) {
+        event_waiter.notify_one();
+        std::this_thread::yield();
+    }
+    event_thread.join();
+    if (exception_from_the_event_thread != nullptr) {
+        /* an exception occured */
+        std::runtime_error e_copy(exception_from_the_event_thread->what());
+        allocation_mtx.lock();
+        delete exception_from_the_event_thread;
+        exception_from_the_event_thread = nullptr;
+        allocation_mtx.unlock();
+        throw e_copy;
+    }
+    deallocate();
 }
 
 void EventThreader::setEventCleanup(std::function<void(void)> cleanup) {
@@ -79,25 +98,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 
 		auto join = [&]() {
-		    et.allocation_mtx.lock();
-		    delete et.calling_lock; // remove lock on this thread, allow event to run
-		    et.calling_lock = nullptr;
-		    et.allocation_mtx.unlock();
-		    if (et.event_lock != nullptr) {
-		        et.event_waiter.notify_one();
-		        std::this_thread::yield();
-		    }
-		    et.event_thread.join();
-		    if (et.exception_from_the_event_thread != nullptr) {
-		        /* an exception occured */
-		        std::runtime_error e_copy((et.exception_from_the_event_thread)->what());
-		        et.allocation_mtx.lock();
-		        delete et.exception_from_the_event_thread;
-		        et.exception_from_the_event_thread = nullptr;
-		        et.allocation_mtx.unlock();
-		        throw e_copy;
-		    }
-		    deallocate();
+		    et.join();
 		};
 
 	    auto switchToCallingThread = [&]() {
