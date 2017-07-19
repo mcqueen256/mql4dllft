@@ -107,7 +107,7 @@ void EventThreader::switchToCallingThread() {
 }
 
 void EventThreader::switchToEventThread() {
-	if (et.require_switch_from_event) {
+	if (require_switch_from_event) {
         throw std::runtime_error("switch to event not matched with a switch to calling");
     }
     require_switch_from_event = true;
