@@ -64,13 +64,9 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
         event_cleanup();
     };
     event_thread = std::thread(event);
-    std::this_thread::yield();
-    calling_waiter.wait(*calling_lock);
-    std::this_thread::yield();
 }
 
 EventThreader::~EventThreader() {
-		deallocate();
 }
 
 void EventThreader::deallocate() {
@@ -104,20 +100,6 @@ void EventThreader::switchToCallingThread() {
 }
 
 void EventThreader::switchToEventThread() {
-	if (require_switch_from_event) {
-        throw std::runtime_error("switch to event not matched with a switch to calling");
-    }
-    require_switch_from_event = true;
-    /* switch to event */
-    event_waiter.notify_one();
-    std::this_thread::yield();
-    calling_waiter.wait(*calling_lock);
-    std::this_thread::yield();
-    /* back from event */
-    if (require_switch_from_event) {
-        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
-        join();
-    }
 }
 
 void EventThreader::join() {
@@ -191,23 +173,18 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		        join();
 		    }
 		};
-		std::function<void (std::function<void (void)>)> func = f;
 
 		// Start construction
-
-	    
-
-	    et.event_thread = std::thread(event);
 	    std::this_thread::yield();
 	    et.calling_waiter.wait(*(et.calling_lock));
 	    std::this_thread::yield();
 		// End constuction
 		//EventThreader et(f);
-		et.switchToEventThread();
+		switchToEventThread();
 		for(int i = 0; i < 75; i++) { ss << "$"; }
-		et.switchToEventThread();
+		switchToEventThread();
 		for(int i = 0; i < 25; i++) { ss << "$"; }
-		et.join();
+		join();
 
 		/* Generate what the result should look like */
 		std::string requirement;
@@ -216,6 +193,8 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		for(int i = 0; i < 50; i++) { requirement += "*"; }
 		for(int i = 0; i < 25; i++) { requirement += "$"; }
 		REQUIRE( requirement == ss.str());
+
+		deallocate();
 
 	}
 
