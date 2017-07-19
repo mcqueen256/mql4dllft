@@ -53,6 +53,16 @@ void EventThreader::deallocate() {
 }
 
 void EventThreader::switchToCallingThread() {
+	if (!require_switch_from_event) {
+        throw std::runtime_error("switch to calling not matched with a switch to event");
+    }
+    require_switch_from_event = false;
+    /* switch to calling */
+    calling_waiter.notify_one();
+    std::this_thread::yield();
+    event_waiter.wait(*(event_lock));
+    std::this_thread::yield();
+    /* back from calling */
 }
 
 void EventThreader::switchToEventThread() {
@@ -102,16 +112,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 
 	    auto switchToCallingThread = [&]() {
-		    if (!et.require_switch_from_event) {
-		        throw std::runtime_error("switch to calling not matched with a switch to event");
-		    }
-		    et.require_switch_from_event = false;
-		    /* switch to calling */
-		    et.calling_waiter.notify_one();
-		    std::this_thread::yield();
-		    et.event_waiter.wait(*(et.event_lock));
-		    std::this_thread::yield();
-		    /* back from calling */
+		    et.switchToCallingThread();
 		};
 
 		auto switchToEventThread= [&]() {
