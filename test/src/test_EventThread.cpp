@@ -26,8 +26,6 @@ public:
     void setEventCleanup(std::function<void(void)>);
 };
 
-EventThreader::EventThreader() {
-}
 EventThreader::EventThreader(std::function<void (std::function<void (void)>)> func) {
 }
 
@@ -54,7 +52,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	std::stringstream ss;
 
 	SECTION("Finding the error") {
-		EventThreader et;
+		EventThreader et([]([](){}){});
 		// class variables
 		std::condition_variable event_waiter, calling_waiter;
 	    std::unique_lock<std::mutex>* event_lock, * calling_lock;
