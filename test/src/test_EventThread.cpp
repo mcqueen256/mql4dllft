@@ -6,6 +6,7 @@
 #include <mutex> // std::mutex, std::unique_lock
 #include <condition_variable> // std::condition_variable
 #include <functional> // std::function
+#define ee.
 
 class EventThreader {
 public:
@@ -67,53 +68,53 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	    // class functions
 
 		auto deallocate = [&]() {
-		    et.allocation_mtx.lock();
-			if (et.exception_from_the_event_thread != nullptr) {
-				delete et.exception_from_the_event_thread;
-				et.exception_from_the_event_thread = nullptr;
+		    ee.allocation_mtx.lock();
+			if (ee.exception_from_the_event_thread != nullptr) {
+				delete ee.exception_from_the_event_thread;
+				ee.exception_from_the_event_thread = nullptr;
 			}
-			if (et.calling_lock != nullptr) {
-				delete et.calling_lock;
-				et.calling_lock = nullptr;
+			if (ee.calling_lock != nullptr) {
+				delete ee.calling_lock;
+				ee.calling_lock = nullptr;
 			}
-			if (et.event_lock != nullptr) {
-				delete et.event_lock;
-				et.event_lock = nullptr;
+			if (ee.event_lock != nullptr) {
+				delete ee.event_lock;
+				ee.event_lock = nullptr;
 			}
-			et.allocation_mtx.unlock();
+			ee.allocation_mtx.unlock();
 		};
 
 		auto join = [&]() {
-		    et.allocation_mtx.lock();
-		    delete et.calling_lock; // remove lock on this thread, allow event to run
-		    et.calling_lock = nullptr;
-		    et.allocation_mtx.unlock();
-		    if (et.event_lock != nullptr) {
-		        et.event_waiter.notify_one();
+		    ee.allocation_mtx.lock();
+		    delete ee.calling_lock; // remove lock on this thread, allow event to run
+		    ee.calling_lock = nullptr;
+		    ee.allocation_mtx.unlock();
+		    if (ee.event_lock != nullptr) {
+		        ee.event_waiter.notify_one();
 		        std::this_thread::yield();
 		    }
-		    et.event_thread.join();
-		    if (et.exception_from_the_event_thread != nullptr) {
+		    ee.event_thread.join();
+		    if (ee.exception_from_the_event_thread != nullptr) {
 		        /* an exception occured */
-		        std::runtime_error e_copy(et.exception_from_the_event_thread->what());
-		        et.allocation_mtx.lock();
-		        delete et.exception_from_the_event_thread;
-		        et.exception_from_the_event_thread = nullptr;
-		        et.allocation_mtx.unlock();
+		        std::runtime_error e_copy(ee.exception_from_the_event_thread->what());
+		        ee.allocation_mtx.lock();
+		        delete ee.exception_from_the_event_thread;
+		        ee.exception_from_the_event_thread = nullptr;
+		        ee.allocation_mtx.unlock();
 		        throw e_copy;
 		    }
 		    deallocate();
 		};
 
 	    auto switchToCallingThread = [&]() {
-		    if (!et.require_switch_from_event) {
+		    if (!ee.require_switch_from_event) {
 		        throw std::runtime_error("switch to calling not matched with a switch to event");
 		    }
-		    et.require_switch_from_event = false;
+		    ee.require_switch_from_event = false;
 		    /* switch to calling */
-		    et.calling_waiter.notify_one();
+		    ee.calling_waiter.notify_one();
 		    std::this_thread::yield();
-		    et.event_waiter.wait(*(et.event_lock));
+		    ee.event_waiter.wait(*(ee.event_lock));
 		    std::this_thread::yield();
 		    /* back from calling */
 		};
@@ -145,48 +146,48 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		std::function<void (std::function<void (void)>)> func = f;
 
 		// Start construction
-		et.allocation_mtx.lock();
-	    et.exception_from_the_event_thread = nullptr;
-	    et.event_lock = nullptr;
-	    et.calling_lock = nullptr;
-	    et.calling_lock = new std::unique_lock<std::mutex>(et.mtx);
-	    et.allocation_mtx.unlock();
-	    et.exception_from_the_event_thread = nullptr;
+		ee.allocation_mtx.lock();
+	    ee.exception_from_the_event_thread = nullptr;
+	    ee.event_lock = nullptr;
+	    ee.calling_lock = nullptr;
+	    ee.calling_lock = new std::unique_lock<std::mutex>(ee.mtx);
+	    ee.allocation_mtx.unlock();
+	    ee.exception_from_the_event_thread = nullptr;
 
-	    et.event_cleanup = [](){}; // empty function
+	    ee.event_cleanup = [](){}; // empty function
 	    auto event = [&](){
 	        /* mtx force switch to calling - blocked by the mutex */
-	        et.allocation_mtx.lock();
-	        et.event_lock = new std::unique_lock<std::mutex>(et.mtx);
-	        et.allocation_mtx.unlock();
+	        ee.allocation_mtx.lock();
+	        ee.event_lock = new std::unique_lock<std::mutex>(ee.mtx);
+	        ee.allocation_mtx.unlock();
 
-	        et.calling_waiter.notify_one();
-	        et.event_waiter.wait(*(et.event_lock));
+	        ee.calling_waiter.notify_one();
+	        ee.event_waiter.wait(*(ee.event_lock));
 	        std::this_thread::yield();
 	        try {
 	            func([&](){switchToCallingThread();});
-	            if (et.require_switch_from_event) { // the event has ended, but not ready to join
+	            if (ee.require_switch_from_event) { // the event has ended, but not ready to join
 	                // rejoin the calling thread after dealing with this exception
 	                throw std::runtime_error("switch to event not matched with a switch to calling");
 	            }
 	        } catch (const std::runtime_error &e) {
 	            /* report the exception to the calling thread */
-	            et.allocation_mtx.lock();
-	            et.exception_from_the_event_thread = new std::runtime_error(e);
-	            et.allocation_mtx.unlock();
-	            et.calling_waiter.notify_one();
+	            ee.allocation_mtx.lock();
+	            ee.exception_from_the_event_thread = new std::runtime_error(e);
+	            ee.allocation_mtx.unlock();
+	            ee.calling_waiter.notify_one();
 	            std::this_thread::yield();
 	        }
-	        et.allocation_mtx.lock();
-	        delete et.event_lock;
-	        et.event_lock = nullptr;
-	        et.allocation_mtx.unlock();
-	        et.event_cleanup();
+	        ee.allocation_mtx.lock();
+	        delete ee.event_lock;
+	        ee.event_lock = nullptr;
+	        ee.allocation_mtx.unlock();
+	        ee.event_cleanup();
 	    };
 
-	    et.event_thread = std::thread(event);
+	    ee.event_thread = std::thread(event);
 	    std::this_thread::yield();
-	    et.calling_waiter.wait(*(et.calling_lock));
+	    ee.calling_waiter.wait(*(ee.calling_lock));
 	    std::this_thread::yield();
 		// End constuction
 		//EventThreader et(f);
@@ -217,11 +218,11 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			switchToMainThread();
 		};
 		EventThreader et(f);
-		et.switchToEventThread();
+		ee.switchToEventThread();
 		for(int i = 0; i < 75; i++) { ss << "$"; }
-		et.switchToEventThread();
+		ee.switchToEventThread();
 		for(int i = 0; i < 25; i++) { ss << "$"; }
-		et.join();
+		ee.join();
 
 		// Generate what the result should look like 
 		std::string requirement;
