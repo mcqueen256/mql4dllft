@@ -13,7 +13,8 @@ public:
     std::condition_variable calling_waiter;
     std::unique_lock<std::mutex>* event_lock = nullptr;
     std::unique_lock<std::mutex>* calling_lock = nullptr;
-    std::mutex mtx, et.allocation_mtx;
+    std::mutex mtx;
+    std::mutex allocation_mtx;
     std::thread event_thread;
     void switchToCallingThread();
     bool require_switch_from_event = false;
