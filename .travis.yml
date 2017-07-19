@@ -39,7 +39,4 @@ after_success: false
 
 after_failure: false
 
-cache:
-    apt: true
-    directories:
-        - $HOME/.cache/pip
+cache: pip
