@@ -164,6 +164,23 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 
 	    // class functions
 
+		auto deallocate = [&]() {
+		    allocation_mtx.lock();
+			if (exception_from_the_event_thread != nullptr) {
+				delete exception_from_the_event_thread;
+				exception_from_the_event_thread = nullptr;
+			}
+			if (calling_lock != nullptr) {
+				delete calling_lock;
+				calling_lock = nullptr;
+			}
+			if (event_lock != nullptr) {
+				delete event_lock;
+				event_lock = nullptr;
+			}
+			allocation_mtx.unlock();
+		};
+
 		auto join = [&]() {
 		    allocation_mtx.lock();
 		    delete calling_lock; // remove lock on this thread, allow event to run
@@ -214,23 +231,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
 		        join();
 		    }
-		};
-
-		auto deallocate = [&]() {
-		    allocation_mtx.lock();
-			if (exception_from_the_event_thread != nullptr) {
-				delete exception_from_the_event_thread;
-				exception_from_the_event_thread = nullptr;
-			}
-			if (calling_lock != nullptr) {
-				delete calling_lock;
-				calling_lock = nullptr;
-			}
-			if (event_lock != nullptr) {
-				delete event_lock;
-				event_lock = nullptr;
-			}
-			allocation_mtx.unlock();
 		};
 
 		/* Example of most basic use */
