@@ -63,6 +63,7 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
         allocation_mtx.unlock();
         event_cleanup();
     };
+    event_thread = std::thread(event);
 }
 
 EventThreader::~EventThreader() {
@@ -178,7 +179,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 
 	    
 
-	    et.event_thread = std::thread(event);
+	    
 	    std::this_thread::yield();
 	    et.calling_waiter.wait(*(et.calling_lock));
 	    std::this_thread::yield();
