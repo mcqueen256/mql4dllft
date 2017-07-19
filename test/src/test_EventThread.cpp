@@ -173,7 +173,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		// End constuction
 		//EventThreader et(f);
 		switchToEventThread();
-		for(int i = 0; i < 75; i++) { ss << "$"; }
+		for(int i = 0; i < 74; i++) { ss << "$"; }
 		switchToEventThread();
 		for(int i = 0; i < 25; i++) { ss << "$"; }
 		et.join();
