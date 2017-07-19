@@ -33,7 +33,7 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
 	allocation_mtx.lock();
     calling_lock = new std::unique_lock<std::mutex>(mtx);
     allocation_mtx.unlock();
-    et.event_cleanup = [](){}; // empty function
+    event_cleanup = [](){}; // empty function
 }
 
 EventThreader::~EventThreader() {
