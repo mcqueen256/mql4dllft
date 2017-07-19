@@ -70,7 +70,6 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
 }
 
 EventThreader::~EventThreader() {
-
 		deallocate();
 }
 
@@ -159,7 +158,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			for(int i = 0; i < 50; i++) { ss << "*"; }
 			switchToMainThread();
 		};
-		EventThreader et([](std::function<void(void)> f){});
+		EventThreader et(f);
 		//EventThreader et(f);
 		et.switchToEventThread();
 		for(int i = 0; i < 75; i++) { ss << "$"; }
