@@ -158,7 +158,50 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			for(int i = 0; i < 50; i++) { ss << "*"; }
 			switchToMainThread();
 		};
+
 		EventThreader et(f);
+
+	    // class functions
+
+		auto deallocate = [&]() {
+		   et.deallocate();
+		};
+
+		auto join = [&]() {
+		    et.join();
+		};
+
+	    auto switchToCallingThread = [&]() {
+		    et.switchToCallingThread();
+		};
+
+		auto switchToEventThread= [&]() {
+		    if (et.require_switch_from_event) {
+		        throw std::runtime_error("switch to event not matched with a switch to calling");
+		    }
+		    et.require_switch_from_event = true;
+		    /* switch to event */
+		    et.event_waiter.notify_one();
+		    std::this_thread::yield();
+		    et.calling_waiter.wait(*et.calling_lock);
+		    std::this_thread::yield();
+		    /* back from event */
+		    if (et.require_switch_from_event) {
+		        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
+		        join();
+		    }
+		};
+		std::function<void (std::function<void (void)>)> func = f;
+
+		// Start construction
+
+	    
+
+	    et.event_thread = std::thread(event);
+	    std::this_thread::yield();
+	    et.calling_waiter.wait(*(et.calling_lock));
+	    std::this_thread::yield();
+		// End constuction
 		//EventThreader et(f);
 		et.switchToEventThread();
 		for(int i = 0; i < 75; i++) { ss << "$"; }
