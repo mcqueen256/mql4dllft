@@ -19,7 +19,7 @@ public:
     void switchToCallingThread();
     bool require_switch_from_event = false;
     std::function<void(void)> event_cleanup;
-    std::runtime_error* exception_from_the_event_thread;
+    std::runtime_error* (et.exception_from_the_event_thread);
     void deallocate();
 public:
     EventThreader(std::function<void (std::function<void (void)>)> func);
@@ -59,15 +59,15 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		// class variables
 	    std::mutex mtx;
 	    std::function<void(void)> event_cleanup;
-	    std::runtime_error* exception_from_the_event_thread;
+	    std::runtime_error* (et.exception_from_the_event_thread);
 
 	    // class functions
 
 		auto deallocate = [&]() {
 		    et.allocation_mtx.lock();
-			if (exception_from_the_event_thread != nullptr) {
-				delete exception_from_the_event_thread;
-				exception_from_the_event_thread = nullptr;
+			if ((et.exception_from_the_event_thread) != nullptr) {
+				delete (et.exception_from_the_event_thread);
+				(et.exception_from_the_event_thread) = nullptr;
 			}
 			if (et.calling_lock != nullptr) {
 				delete et.calling_lock;
@@ -90,12 +90,12 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		        std::this_thread::yield();
 		    }
 		    et.event_thread.join();
-		    if (exception_from_the_event_thread != nullptr) {
+		    if ((et.exception_from_the_event_thread) != nullptr) {
 		        /* an exception occured */
-		        std::runtime_error e_copy(exception_from_the_event_thread->what());
+		        std::runtime_error e_copy((et.exception_from_the_event_thread)->what());
 		        et.allocation_mtx.lock();
-		        delete exception_from_the_event_thread;
-		        exception_from_the_event_thread = nullptr;
+		        delete (et.exception_from_the_event_thread);
+		        (et.exception_from_the_event_thread) = nullptr;
 		        et.allocation_mtx.unlock();
 		        throw e_copy;
 		    }
@@ -143,12 +143,12 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 
 		// Start construction
 		et.allocation_mtx.lock();
-	    exception_from_the_event_thread = nullptr;
+	    (et.exception_from_the_event_thread) = nullptr;
 	    et.event_lock = nullptr;
 	    et.calling_lock = nullptr;
 	    et.calling_lock = new std::unique_lock<std::mutex>(mtx);
 	    et.allocation_mtx.unlock();
-	    exception_from_the_event_thread = nullptr;
+	    (et.exception_from_the_event_thread) = nullptr;
 
 	    event_cleanup = [](){}; // empty function
 	    auto event = [&](){
@@ -169,7 +169,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	        } catch (const std::runtime_error &e) {
 	            /* report the exception to the calling thread */
 	            et.allocation_mtx.lock();
-	            exception_from_the_event_thread = new std::runtime_error(e);
+	            (et.exception_from_the_event_thread) = new std::runtime_error(e);
 	            et.allocation_mtx.unlock();
 	            et.calling_waiter.notify_one();
 	            std::this_thread::yield();
