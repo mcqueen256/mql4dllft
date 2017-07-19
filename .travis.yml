@@ -1,5 +1,5 @@
 language: cpp
-dist: xenial
+dist: trusty
 sudo: false
 
 matrix:
@@ -18,131 +18,8 @@ matrix:
             secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
       env:
         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
-
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
-
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-6
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
-          packages:
-            - clang-3.6
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-        - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
-
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
-          packages:
-            - clang-3.7
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-        - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
-
-    # works on Precise and Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
-          packages:
-            - clang-3.8
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
-
-    # works on Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-3.9
-          packages:
-            - clang-3.9
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
-
-    # works on Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - clang-4.0
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-
-    # works on Trusty
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty
-          packages:
-            - clang-5.0
-        sonarcloud:
-          organization: "mcqueen256-github"
-          token:
-            secure: "i9YfSCX/4FTBnqXwR8yEgIXFZBYvoPs/KvjgX0vNYlyq3a/EpK0cjHoeuyig44DvnqLmCq+Z2/OSe4Yo6XW0l56pcrSDMTAtcZeCG1+NYN0i3nOPKCefeHbBk3rWDCIgakyWWOCTi1Mewi8YjCN6pb/Z2DIWq7c8IVdCarX/zjotrznq2toIAelKkp5KPFHyUlfw+bTgqnFkNZlWSLL5v3psALYW/3WvSfyylxeze3JJX+I0e/6JSmPzktOFA17dZPlQghTo1gI38GSvqIZLBu3fzgN+0cV76kpvduHRLWRhn8G54SY2fg+z9Gqd+zj0dIVQmclveNoKy2EM6bPGQs/d06XxFDLeVx5zuavT7yxQca/x1x0tqn6TDR7fMyAYZdr8WCAZkrol/mwZ9dyIPemqS2OF9G8dCOXqZ/uRdOCKIQmVpApF19NI9EA+NvboI+rb5oMBdufNP6ItSIFGSrUByKS46+EmdkX6DdqYynB5P4Z5RW+6Jrceu+sJyZgnp0BUkLK8pFq+UGQq3Nbxvy8gutRM+n7lRYnTpQELSrRI0w5E0KVYjlRyXhXQ3crXKuhjd31SnkBtcYWcP2Shdv/qAaB3rjpSwtWqN5Rk3KVEAUCzNH29CkjLL/lgctgO5Vqa2siyL8E76L28CoabpEqeRwxcgUjPVluOOOKtJlQ="
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
 before_install:
   - eval "${MATRIX_EVAL}"
-  - jdk_switcher use oraclejdk8
 
 install:
   - pip install --user cpp-coveralls
@@ -150,16 +27,9 @@ install:
 before_script: true
 
 script:
-  - build-wrapper-linux-x86-64 --out-dir bw-output scons
-  - sonar-scanner
-
-after_success:
+  - scons
   - ./build/mql4dllft
-  - coveralls --gcov-options '\-lp'
 
-after_failure:
-  - coveralls --gcov-options '\-lp'
+after_success: false
 
-cache:
-  directories:
-    - '$HOME/.sonar/cache'
+after_failure: false
