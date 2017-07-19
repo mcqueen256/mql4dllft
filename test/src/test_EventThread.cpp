@@ -65,6 +65,9 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
     };
 
     event_thread = std::thread(event);
+    std::this_thread::yield();
+    calling_waiter.wait(*calling_lock);
+    std::this_thread::yield();
 }
 
 EventThreader::~EventThreader() {
@@ -163,14 +166,11 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		        et.join();
 		    }
 		};
-		std::function<void (std::function<void (void)>)> func = f;
 
 		// Start construction
 
 	    
-	    std::this_thread::yield();
-	    et.calling_waiter.wait(*(et.calling_lock));
-	    std::this_thread::yield();
+	    
 		// End constuction
 		//EventThreader et(f);
 		switchToEventThread();
