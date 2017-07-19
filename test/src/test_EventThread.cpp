@@ -187,11 +187,11 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			switchToMainThread();
 		};
 		EventThreader et(f);
-		switchToEventThread();
+		et.switchToEventThread();
 		for(int i = 0; i < 75; i++) { ss << "$"; }
-		switchToEventThread();
+		et.switchToEventThread();
 		for(int i = 0; i < 25; i++) { ss << "$"; }
-		join();
+		et.join();
 
 		// Generate what the result should look like 
 		std::string requirement;
