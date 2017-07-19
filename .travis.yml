@@ -25,6 +25,15 @@ before_script: true
 script:
   - scons
   - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
+  - ./build/mql4dllft
 
 after_success: false
 
