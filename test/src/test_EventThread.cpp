@@ -33,9 +33,11 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
 	allocation_mtx.lock();
     calling_lock = new std::unique_lock<std::mutex>(mtx);
     allocation_mtx.unlock();
+    et.event_cleanup = [](){}; // empty function
 }
 
 EventThreader::~EventThreader() {
+	deallocate();
 }
 
 void EventThreader::deallocate() {
@@ -114,18 +116,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 
 	    // class functions
 
-		auto deallocate = [&]() {
-		   et.deallocate();
-		};
-
-		auto join = [&]() {
-		    et.join();
-		};
-
-	    auto switchToCallingThread = [&]() {
-		    et.switchToCallingThread();
-		};
-
 		auto switchToEventThread= [&]() {
 		    if (et.require_switch_from_event) {
 		        throw std::runtime_error("switch to event not matched with a switch to calling");
@@ -139,14 +129,13 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		    /* back from event */
 		    if (et.require_switch_from_event) {
 		        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
-		        join();
+		        et.join();
 		    }
 		};
 		std::function<void (std::function<void (void)>)> func = f;
 
 		// Start construction
 
-	    et.event_cleanup = [](){}; // empty function
 	    auto event = [&](){
 	        /* mtx force switch to calling - blocked by the mutex */
 	        et.allocation_mtx.lock();
@@ -157,7 +146,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	        et.event_waiter.wait(*(et.event_lock));
 	        std::this_thread::yield();
 	        try {
-	            func([&](){switchToCallingThread();});
+	            func([&](){et.switchToCallingThread();});
 	            if (et.require_switch_from_event) { // the event has ended, but not ready to join
 	                // rejoin the calling thread after dealing with this exception
 	                throw std::runtime_error("switch to event not matched with a switch to calling");
@@ -187,7 +176,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		for(int i = 0; i < 75; i++) { ss << "$"; }
 		switchToEventThread();
 		for(int i = 0; i < 25; i++) { ss << "$"; }
-		join();
+		et.join();
 
 		/* Generate what the result should look like */
 		std::string requirement;
@@ -197,7 +186,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		for(int i = 0; i < 25; i++) { requirement += "$"; }
 		REQUIRE( requirement == ss.str());
 
-		deallocate();
 
 	}
 
