@@ -70,6 +70,8 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
 }
 
 EventThreader::~EventThreader() {
+
+		deallocate();
 }
 
 void EventThreader::deallocate() {
@@ -172,8 +174,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		for(int i = 0; i < 50; i++) { requirement += "*"; }
 		for(int i = 0; i < 25; i++) { requirement += "$"; }
 		REQUIRE( requirement == ss.str());
-
-		deallocate();
 
 	}
 
