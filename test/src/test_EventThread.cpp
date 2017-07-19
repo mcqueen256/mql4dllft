@@ -176,7 +176,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		        join();
 		    }
 		};
-		std::function<void (std::function<void (void)>)> func = f;
 
 		// Start construction
 
