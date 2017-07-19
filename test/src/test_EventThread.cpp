@@ -34,7 +34,7 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
     exception_from_the_event_thread = nullptr;
     event_lock = nullptr;
     calling_lock = nullptr;
-    calling_lock = new std::unique_lock<std::mutex>(et.mtx);
+    calling_lock = new std::unique_lock<std::mutex>(mtx);
     allocation_mtx.unlock();
     exception_from_the_event_thread = nullptr;
 
