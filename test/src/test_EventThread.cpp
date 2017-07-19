@@ -36,32 +36,32 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
     event_cleanup = [](){}; // empty function
     auto event = [&](){
         /* mtx force switch to calling - blocked by the mutex */
-        this->allocation_mtx.lock();
-        this->event_lock = new std::unique_lock<std::mutex>(this->mtx);
-        this->allocation_mtx.unlock();
+        allocation_mtx.lock();
+        event_lock = new std::unique_lock<std::mutex>(mtx);
+        allocation_mtx.unlock();
 
-        this->calling_waiter.notify_one();
-        this->event_waiter.wait(*(this->event_lock));
+        calling_waiter.notify_one();
+        event_waiter.wait(*(event_lock));
         std::this_thread::yield();
         try {
-            func([&](){this->switchToCallingThread();});
-            if (this->require_switch_from_event) { // the event has ended, but not ready to join
+            func([&](){switchToCallingThread();});
+            if (require_switch_from_event) { // the event has ended, but not ready to join
                 // rejoin the calling thread after dealing with this exception
                 throw std::runtime_error("switch to event not matched with a switch to calling");
             }
         } catch (const std::runtime_error &e) {
             /* report the exception to the calling thread */
-            this->allocation_mtx.lock();
-            this->exception_from_the_event_thread = new std::runtime_error(e);
-            this->allocation_mtx.unlock();
-            this->calling_waiter.notify_one();
+            allocation_mtx.lock();
+            exception_from_the_event_thread = new std::runtime_error(e);
+            allocation_mtx.unlock();
+            calling_waiter.notify_one();
             std::this_thread::yield();
         }
-        this->allocation_mtx.lock();
-        delete this->event_lock;
-        this->event_lock = nullptr;
-        this->allocation_mtx.unlock();
-        this->event_cleanup();
+        allocation_mtx.lock();
+        delete event_lock;
+        event_lock = nullptr;
+        allocation_mtx.unlock();
+        event_cleanup();
     };
 
     event_thread = std::thread(event);
