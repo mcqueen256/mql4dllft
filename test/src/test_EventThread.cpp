@@ -90,7 +90,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		    calling_lock = nullptr;
 		    et.allocation_mtx.unlock();
 		    if (event_lock != nullptr) {
-		        event_waiter.notify_one();
+		        et.event_waiter.notify_one();
 		        std::this_thread::yield();
 		    }
 		    event_thread.join();
@@ -112,9 +112,9 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		    }
 		    require_switch_from_event = false;
 		    /* switch to calling */
-		    calling_waiter.notify_one();
+		    et.calling_waiter.notify_one();
 		    std::this_thread::yield();
-		    event_waiter.wait(*(event_lock));
+		    et.event_waiter.wait(*(event_lock));
 		    std::this_thread::yield();
 		    /* back from calling */
 		};
@@ -125,9 +125,9 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		    }
 		    require_switch_from_event = true;
 		    /* switch to event */
-		    event_waiter.notify_one();
+		    et.event_waiter.notify_one();
 		    std::this_thread::yield();
-		    calling_waiter.wait(*calling_lock);
+		    et.calling_waiter.wait(*calling_lock);
 		    std::this_thread::yield();
 		    /* back from event */
 		    if (require_switch_from_event) {
@@ -161,8 +161,8 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	        event_lock = new std::unique_lock<std::mutex>(mtx);
 	        et.allocation_mtx.unlock();
 
-	        calling_waiter.notify_one();
-	        event_waiter.wait(*(event_lock));
+	        et.calling_waiter.notify_one();
+	        et.event_waiter.wait(*(event_lock));
 	        std::this_thread::yield();
 	        try {
 	            func([&](){switchToCallingThread();});
@@ -175,7 +175,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	            et.allocation_mtx.lock();
 	            exception_from_the_event_thread = new std::runtime_error(e);
 	            et.allocation_mtx.unlock();
-	            calling_waiter.notify_one();
+	            et.calling_waiter.notify_one();
 	            std::this_thread::yield();
 	        }
 	        et.allocation_mtx.lock();
@@ -187,7 +187,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 
 	    event_thread = std::thread(event);
 	    std::this_thread::yield();
-	    calling_waiter.wait(*(calling_lock));
+	    et.calling_waiter.wait(*(calling_lock));
 	    std::this_thread::yield();
 		// End constuction
 		//EventThreader et(f);
