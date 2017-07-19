@@ -240,7 +240,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			for(int i = 0; i < 50; i++) { ss << "*"; }
 			switchToMainThread();
 		};
-		std::function<void (std::function<void (void)>)> func f;
+		std::function<void (std::function<void (void)>)> func = f;
 
 		// Start construction
 		allocation_mtx.lock();
