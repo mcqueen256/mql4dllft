@@ -35,6 +35,8 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
     allocation_mtx.unlock();
     event_cleanup = [](){}; // empty function
     auto event = [&](){
+    	/* store local copy of func */
+    	std::function<void (std::function<void (void)>)> f = func;
         /* mtx force switch to calling - blocked by the mutex */
         this->allocation_mtx.lock();
         this->event_lock = new std::unique_lock<std::mutex>(this->mtx);
@@ -44,7 +46,7 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
         this->event_waiter.wait(*(this->event_lock));
         std::this_thread::yield();
         try {
-            func([&](){this->switchToCallingThread();});
+            f([&](){this->switchToCallingThread();});
             if (this->require_switch_from_event) { // the event has ended, but not ready to join
                 // rejoin the calling thread after dealing with this exception
                 throw std::runtime_error("switch to event not matched with a switch to calling");
