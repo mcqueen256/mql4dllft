@@ -9,8 +9,10 @@
 
 class EventThreader {
 public:
-    std::condition_variable event_waiter, calling_waiter;
-    std::unique_lock<std::mutex>* event_lock, * calling_lock;
+    std::condition_variable event_waiter;
+    std::condition_variable calling_waiter;
+    std::unique_lock<std::mutex>* event_lock = nullptr;
+    std::unique_lock<std::mutex>* calling_lock = nullptr;
     std::mutex mtx, allocation_mtx;
     std::thread event_thread;
     void switchToCallingThread();
