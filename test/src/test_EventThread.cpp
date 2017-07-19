@@ -178,7 +178,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		REQUIRE( requirement == ss.str());
 	}
 
-	/* SECTION("Abitrary use") {
+	SECTION("Abitrary use") {
 		// Example of most basic use
 		auto f = [&ss](std::function<void(void)> switchToMainThread){
 			for(int i = 0; i < 100; i++) { ss << "*"; }
@@ -201,5 +201,5 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		for(int i = 0; i < 25; i++) { requirement += "$"; }
 		REQUIRE( requirement == ss.str());
 
-	} */
+	}
 }
