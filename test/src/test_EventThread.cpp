@@ -58,7 +58,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		EventThreader et([](std::function<void(void)> f){});
 		// class variables
 	    std::mutex mtx;
-	    bool require_switch_from_event = false;
 	    std::function<void(void)> event_cleanup;
 	    std::runtime_error* exception_from_the_event_thread;
 
@@ -104,10 +103,10 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 
 	    auto switchToCallingThread = [&]() {
-		    if (!require_switch_from_event) {
+		    if (!et.require_switch_from_event) {
 		        throw std::runtime_error("switch to calling not matched with a switch to event");
 		    }
-		    require_switch_from_event = false;
+		    et.require_switch_from_event = false;
 		    /* switch to calling */
 		    et.calling_waiter.notify_one();
 		    std::this_thread::yield();
@@ -117,17 +116,17 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 
 		auto switchToEventThread= [&]() {
-		    if (require_switch_from_event) {
+		    if (et.require_switch_from_event) {
 		        throw std::runtime_error("switch to event not matched with a switch to calling");
 		    }
-		    require_switch_from_event = true;
+		    et.require_switch_from_event = true;
 		    /* switch to event */
 		    et.event_waiter.notify_one();
 		    std::this_thread::yield();
 		    et.calling_waiter.wait(*et.calling_lock);
 		    std::this_thread::yield();
 		    /* back from event */
-		    if (require_switch_from_event) {
+		    if (et.require_switch_from_event) {
 		        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
 		        join();
 		    }
@@ -163,7 +162,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	        std::this_thread::yield();
 	        try {
 	            func([&](){switchToCallingThread();});
-	            if (require_switch_from_event) { // the event has ended, but not ready to join
+	            if (et.require_switch_from_event) { // the event has ended, but not ready to join
 	                // rejoin the calling thread after dealing with this exception
 	                throw std::runtime_error("switch to event not matched with a switch to calling");
 	            }
