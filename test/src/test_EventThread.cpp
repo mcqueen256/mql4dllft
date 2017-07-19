@@ -185,7 +185,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		    }
 		    deallocate();
 		};
-		
+
 	    auto switchToCallingThread = [&]() {
 		    if (!require_switch_from_event) {
 		        throw std::runtime_error("switch to calling not matched with a switch to event");
@@ -240,6 +240,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 			for(int i = 0; i < 50; i++) { ss << "*"; }
 			switchToMainThread();
 		};
+		std::function<void (std::function<void (void)>)> func f;
 
 		// Start construction
 		allocation_mtx.lock();
