@@ -57,7 +57,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	SECTION("Finding the error") {
 		EventThreader et([](std::function<void(void)> f){});
 		// class variables
-	    std::mutex mtx;
 	    std::function<void(void)> event_cleanup;
 
 	    // class functions
@@ -145,7 +144,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	    et.exception_from_the_event_thread = nullptr;
 	    et.event_lock = nullptr;
 	    et.calling_lock = nullptr;
-	    et.calling_lock = new std::unique_lock<std::mutex>(mtx);
+	    et.calling_lock = new std::unique_lock<std::mutex>(et.mtx);
 	    et.allocation_mtx.unlock();
 	    et.exception_from_the_event_thread = nullptr;
 
@@ -153,7 +152,7 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 	    auto event = [&](){
 	        /* mtx force switch to calling - blocked by the mutex */
 	        et.allocation_mtx.lock();
-	        et.event_lock = new std::unique_lock<std::mutex>(mtx);
+	        et.event_lock = new std::unique_lock<std::mutex>(et.mtx);
 	        et.allocation_mtx.unlock();
 
 	        et.calling_waiter.notify_one();
