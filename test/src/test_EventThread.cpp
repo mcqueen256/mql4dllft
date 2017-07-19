@@ -107,6 +107,20 @@ void EventThreader::switchToCallingThread() {
 }
 
 void EventThreader::switchToEventThread() {
+	if (et.require_switch_from_event) {
+        throw std::runtime_error("switch to event not matched with a switch to calling");
+    }
+    require_switch_from_event = true;
+    /* switch to event */
+    event_waiter.notify_one();
+    std::this_thread::yield();
+    calling_waiter.wait(*calling_lock);
+    std::this_thread::yield();
+    /* back from event */
+    if (require_switch_from_event) {
+        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
+        join();
+    }
 }
 
 void EventThreader::join() {
@@ -149,35 +163,9 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		};
 
 		EventThreader et(f);
-
-	    // class functions
-
-		auto switchToEventThread= [&]() {
-		    if (et.require_switch_from_event) {
-		        throw std::runtime_error("switch to event not matched with a switch to calling");
-		    }
-		    et.require_switch_from_event = true;
-		    /* switch to event */
-		    et.event_waiter.notify_one();
-		    std::this_thread::yield();
-		    et.calling_waiter.wait(*et.calling_lock);
-		    std::this_thread::yield();
-		    /* back from event */
-		    if (et.require_switch_from_event) {
-		        /* this exception is thrown if switchToCallingThread() was not used, which means the thread ended */
-		        et.join();
-		    }
-		};
-
-		// Start construction
-
-	    
-	    
-		// End constuction
-		//EventThreader et(f);
-		switchToEventThread();
+		et.switchToEventThread();
 		for(int i = 0; i < 75; i++) { ss << "$"; }
-		switchToEventThread();
+		et.switchToEventThread();
 		for(int i = 0; i < 25; i++) { ss << "$"; }
 		et.join();
 
@@ -188,8 +176,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		for(int i = 0; i < 50; i++) { requirement += "*"; }
 		for(int i = 0; i < 25; i++) { requirement += "$"; }
 		REQUIRE( requirement == ss.str());
-
-
 	}
 
 	/* SECTION("Abitrary use") {
