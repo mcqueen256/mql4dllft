@@ -18,7 +18,7 @@ test_env = Environment()
 if windows():
 	CXXFLAGS='/std:c++11 /Ob /EHsc /I.\\include\\ /I.\\test\\include\\'
 elif linux():
-	CXXFLAGS='-g -O0 -std=c++11 -Wall -pedantic -I./include/ -I./test/include/'
+	CXXFLAGS='-g -O0 -fprofile-arcs -ftest-coverage -std=c++11 -Wall -pedantic -I./include/ -I./test/include/'
 elif osx():
 	CXXFLAGS='-g -O0 -std=c++11 -Wall -pedantic -I./include/ -I./test/include/'
 test_env.Append(CXXFLAGS=CXXFLAGS)
