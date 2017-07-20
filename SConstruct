@@ -9,7 +9,7 @@ if windows():
 elif linux():
 	CXXFLAGS='-g -O0 -fprofile-arcs -ftest-coverage -std=c++11 -Wall -pedantic -I./include/'
 elif osx():
-	CXXFLAGS='-g -O0 -fprofile-arcs -ftest-coverage -std=c++11 -Wall -pedantic -I./include/'
+	CXXFLAGS='-g -O0 -std=c++11 -Wall -pedantic -I./include/'
 project_env.Append(CXXFLAGS=CXXFLAGS)
 
 
@@ -32,7 +32,7 @@ elif linux():
 	LINKFLAGS='--coverage -pthread -lpthread -Wl,--no-as-needed -lgcov'
 elif osx():
 	CXXFLAGS='-std=c++11 -O0 -I./test/include/'
-	LINKFLAGS='--coverage'
+	LINKFLAGS=''
 program_env.Append(CXXFLAGS=CXXFLAGS)
 program_env.Append(LINKFLAGS= LINKFLAGS)
 
