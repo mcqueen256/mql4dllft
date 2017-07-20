@@ -31,11 +31,7 @@ extern "C" {
 	/*
 	 * Note: MQL calls are not available until after this function returns.
 	 */
-	MT4_API RobotReferenceType initialise(int param1);
+	MT4_API RobotReferenceType initialise();
 	MT4_API void deinitialise(RobotReferenceType instance, const int reason);
-	MT4_API void enableTrading(RobotReferenceType instance);
-	MT4_API void disableTrading(RobotReferenceType instance);
-	MT4_API int bar(RobotReferenceType instance, char* time, double open, double high, double low, double close, double volume);
-	MT4_API int quote(RobotReferenceType instance, char* time, double open, double high, double low, double close, double volume);
 }
 #endif
