@@ -165,7 +165,6 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		et.switchToEventThread();
 		REQUIRE( var == 1);
 		et.join();
-		REQUIRE( var = 10 );
-
+		REQUIRE( var == 10 );
 	}
 }
