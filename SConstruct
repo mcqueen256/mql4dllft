@@ -5,7 +5,7 @@ osx = lambda: platform.system().lower() == 'darwin'
 
 project_env = Environment()
 if windows():
-	CXXFLAGS=''
+	CXXFLAGS='/std:c++11'
 elif linux():
 	CXXFLAGS='-g -O0 -fprofile-arcs -ftest-coverage -std=c++11 -Wall -pedantic -I./include/'
 elif osx():
@@ -16,7 +16,7 @@ project_env.Append(CXXFLAGS=CXXFLAGS)
 
 test_env = Environment()
 if windows():
-	CXXFLAGS=''
+	CXXFLAGS='/std:c++11'
 elif linux():
 	CXXFLAGS='-g -O0 -std=c++11 -Wall -pedantic -I./include/ -I./test/include/'
 elif osx():
@@ -25,7 +25,7 @@ test_env.Append(CXXFLAGS=CXXFLAGS)
 
 program_env = Environment()
 if windows():
-	CXXFLAGS=''
+	CXXFLAGS='/std:c++11'
 	LINKFLAGS=''
 elif linux():
 	CXXFLAGS='-std=c++11 -O0 -I./test/include/'
