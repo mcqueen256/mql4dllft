@@ -137,6 +137,7 @@ after_success:
     if [[ "${STATISTICS}" == "1" ]]; then
       coveralls --gcov-options '\-lp'
     fi
+  - ls
 
 after_failure: false
 
