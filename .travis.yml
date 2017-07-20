@@ -19,6 +19,7 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
         - STATISTICS="1"
+        - BUILD_COMMAND="build-wrapper-linux-x86-64 --out-dir bw-output scons"
 
     # works on Precise and Trusty
     - os: linux
@@ -30,6 +31,7 @@ matrix:
             - g++-5
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+         - BUILD_COMMAND="scons"
 
     # works on Precise and Trusty
     - os: linux
@@ -41,6 +43,7 @@ matrix:
             - g++-6
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
+        - BUILD_COMMAND="scons"
     # works on Precise and Trusty
     - os: linux
       addons:
@@ -52,6 +55,7 @@ matrix:
             - clang-3.6
       env:
         - MATRIX_EVAL="CC=clang-3.6 && CXX=clang++-3.6"
+        - BUILD_COMMAND="scons"
 
     # works on Precise and Trusty
     - os: linux
@@ -64,6 +68,7 @@ matrix:
             - clang-3.7
       env:
         - MATRIX_EVAL="CC=clang-3.7 && CXX=clang++-3.7"
+        - BUILD_COMMAND="scons"
 
     # works on Precise and Trusty
     - os: linux
@@ -76,6 +81,7 @@ matrix:
             - clang-3.8
       env:
         - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+        - BUILD_COMMAND="scons"
 
     # works on Trusty
     - os: linux
@@ -87,6 +93,7 @@ matrix:
             - clang-3.9
       env:
         - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+        - BUILD_COMMAND="scons"
 
     # works on Trusty
     - os: linux
@@ -98,6 +105,7 @@ matrix:
             - clang-4.0
       env:
         - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+        - BUILD_COMMAND="scons"
 
     # works on Trusty
     - os: linux
@@ -109,21 +117,25 @@ matrix:
             - clang-5.0
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - BUILD_COMMAND="scons"
 
     - os: osx
       osx_image: xcode8
       env:
         - MATRIX_EVAL="brew install scons && CC=gcc-4.9 && CXX=g++-4.9"
+        - BUILD_COMMAND="scons"
 
     - os: osx
       osx_image: xcode8
       env:
         - MATRIX_EVAL="brew install gcc5 && CC=gcc-5 && CXX=g++-5"
+        - BUILD_COMMAND="scons"
 
     - os: osx
       osx_image: xcode8
       env:
         - MATRIX_EVAL="brew install gcc scons && CC=gcc-6 && CXX=g++-6"
+        - BUILD_COMMAND="scons"
 
 before_install:
   - eval "${MATRIX_EVAL}"
@@ -142,15 +154,12 @@ install:
 before_script: true
 
 script:
+  - eval "${BUILD_COMMAND}"
+  - ./build/mql4dllft
   - |
     if [[ "${STATISTICS}" == "1" ]]; then
-      build-wrapper-linux-x86-64 --out-dir bw-output scons
-      ./build/mql4dllft
       ./generate_gcov_reports.sh
       sonar-scanner
-    else
-      scons
-      ./build/mql4dllft
     fi
 
 after_success:
