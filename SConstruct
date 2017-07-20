@@ -25,7 +25,7 @@ test_env.Append(CXXFLAGS=CXXFLAGS)
 
 program_env = Environment()
 if windows():
-	CXXFLAGS='/std:c++11 /Ob'
+	CXXFLAGS='/std:c++11 /Ob -I./test/include/'
 	LINKFLAGS=''
 elif linux():
 	CXXFLAGS='-std=c++11 -O0 -I./test/include/'
