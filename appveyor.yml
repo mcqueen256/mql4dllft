@@ -1,0 +1,19 @@
+environment:
+
+  matrix:
+    - PYTHON: "C:\\Python27"
+      SCONS_VERSION: "2.3.6"
+    - PYTHON: "C:\\Python27"
+      SCONS_VERSION: "2.4.1"
+    - PYTHON: "C:\\Python27"
+      SCONS_VERSION: "2.5.1"
+
+install:
+  - call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+  - SET "PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - pip install wheel
+  - pip install scons
+build_script: off
+test_script: off
+after_test: off
