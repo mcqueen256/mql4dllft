@@ -49,24 +49,6 @@ EventThreader::EventThreader(std::function<void (std::function<void (void)>)> fu
 }
 
 EventThreader::~EventThreader() {
-	deallocate();
-}
-
-void EventThreader::deallocate() {
-	allocation_mtx.lock();
-	if (exception_from_the_event_thread != nullptr) {
-		delete exception_from_the_event_thread;
-		exception_from_the_event_thread = nullptr;
-	}
-	if (calling_lock != nullptr) {
-		delete calling_lock;
-		calling_lock = nullptr;
-	}
-	if (event_lock != nullptr) {
-		delete event_lock;
-		event_lock = nullptr;
-	}
-	allocation_mtx.unlock();
 }
 
 void EventThreader::switchToCallingThread() {
@@ -118,7 +100,6 @@ void EventThreader::join() {
         allocation_mtx.unlock();
         throw e_copy;
     }
-    deallocate();
 }
 
 void EventThreader::setEventCleanup(std::function<void(void)> cleanup) {

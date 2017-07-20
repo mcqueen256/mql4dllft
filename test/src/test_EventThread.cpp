@@ -150,4 +150,22 @@ TEST_CASE( "EventThreader", "[EventThreader]" ) {
 		et.switchToEventThread();
 		REQUIRE_THROWS_WITH(et.join(), "switch to calling not matched with a switch to event");
 	}
+
+	SECTION("clean up") {
+		int var = 100;
+		auto f = [&var](std::function<void(void)> switchToMainThread){
+			var = 1;
+			switchToMainThread();
+		};
+		EventThreader et(f);
+		et.setEventCleanup([&var](){
+			var = 10;
+		});
+		REQUIRE( var == 100);
+		et.switchToEventThread();
+		REQUIRE( var == 1);
+		et.join();
+		REQUIRE( var = 10 );
+
+	}
 }
