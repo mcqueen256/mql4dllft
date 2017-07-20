@@ -1,5 +1,5 @@
 environment:
-  CXX=cl.exe
+  CXX: cl.exe
 
   matrix:
     - PYTHON: "C:\\Python27"
