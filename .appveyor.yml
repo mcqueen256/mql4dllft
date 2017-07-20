@@ -18,5 +18,5 @@ install:
   - pip install scons
 
 build_script: scons
-#test_script: off
+test_script: build\mql4dllft.exe
 #after_test: off
