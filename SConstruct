@@ -37,13 +37,5 @@ for file in cpp_dir(test_src_dir):
 main_test_object = optimised_env.Object(target='test', source=['test.cpp'], srcdir=test_dir)
 main_test_program = optimised_env.Program(target=build_dir + 'mql4dllft', source=main_test_object + case_test_objects + project_test_objects, srcdir=test_dir)
 
-# clean up debug generated files
-cleaning_map = {}
-for file in cpp_dir(src_dir):
-	cleaning_map[file.split('.')[0] + '.test.gcda'] = obj
-	cleaning_map[file.split('.')[0] + '.test.gcno'] = obj
-for file in cpp_dir(test_src_dir):
-	cleaning_map[file.split('.')[0] + '.test.gcda'] = obj
-	cleaning_map[file.split('.')[0] + '.test.gcno'] = obj
-for file, node in cleaning_map.iteritems():
-	Clean(node, file)
+
+
