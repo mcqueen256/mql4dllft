@@ -49,11 +49,11 @@ if not os.path.isdir(build_dir):
 	os.mkdir(build_dir)
 
 # Object files for robot code with coverage
-project_test_objects = []
+project_objects = []
 for file in cpp_dir(src_dir):
 	t_name = '.'.join([file.split('.')[0], 'test', 'o'])
 	obj = project_env.Object(target=t_name, source=file, srcdir=src_dir)
-	project_test_objects.extend(obj)
+	project_objects.extend(obj)
 
 # Test case objects
 case_test_objects = []
@@ -64,7 +64,15 @@ for file in cpp_dir(test_src_dir):
 
 # The catch code including main
 main_test_object = program_env.Object(target='test', source=['test.cpp'], srcdir=test_dir)
-main_test_program = program_env.Program(target=build_dir + 'mql4dllft', source=main_test_object + case_test_objects + project_test_objects, srcdir=test_dir)
+main_test_program = program_env.Program(target=build_dir + 'mql4dllft', source=main_test_object + case_test_objects + project_objects, srcdir=test_dir)
+Default(main_test_program)
+
+dll_env = Environment()
+CXXFLAGS='/std:c++11 /EHsc /D_USRDLL /D_WINDLL -I./test/include/ -DPRODUCTION'
+dll_env.Append(CXXFLAGS=CXXFLAGS)
+dll_env.SharedLibrary(target=build_dir + 'bot.dll', source=project_objects)
+dll_env.Alias('dll', build_dir + 'bot.dll')
 
 
+	
 
