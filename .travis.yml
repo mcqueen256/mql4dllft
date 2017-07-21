@@ -1,6 +1,7 @@
 language: cpp
 dist: trusty
 sudo: false
+python: "2.7"
 
 matrix:
   include:
@@ -149,11 +150,13 @@ install:
     if [[ "${STATISTICS}" == "1" ]]; then
       pip install --upgrade pip
       pip install --user cpp-coveralls
+      pip install -r requirements.txt
     fi
 
 before_script: true
 
 script:
+  - python generator
   - eval "${BUILD_COMMAND}"
   - ./build/mql4dllft
   - |

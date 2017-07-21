@@ -11,7 +11,10 @@
 .sconsign.dblite
 *.gcno
 *.gcda
+*.gcov
 build/
+venv/
+__pycache__/
 
 # Compiled Static libraries
 *.lai
@@ -22,5 +25,5 @@ build/
 # Executables
 *.exe
 *.out
-*.app
+*.dll
 

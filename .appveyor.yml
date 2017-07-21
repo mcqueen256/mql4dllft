@@ -16,7 +16,10 @@ install:
   - pip install --upgrade pip
   - pip install wheel
   - pip install scons
+  - pip install -r requirements.txt
 
-build_script: scons
+build_script:
+  - python generator
+  - scons
 test_script: build\mql4dllft.exe
 #after_test: off

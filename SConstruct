@@ -12,8 +12,6 @@ elif osx():
 	CXXFLAGS='-g -O0 -std=c++11 -Wall -pedantic -I./include/'
 project_env.Append(CXXFLAGS=CXXFLAGS)
 
-
-
 test_env = Environment()
 if windows():
 	CXXFLAGS='/std:c++11 /Ob /EHsc /I.\\include\\ /I.\\test\\include\\'
@@ -72,7 +70,3 @@ CXXFLAGS='/std:c++11 /EHsc /D_USRDLL /D_WINDLL -I./test/include/ -DPRODUCTION'
 dll_env.Append(CXXFLAGS=CXXFLAGS)
 dll_env.SharedLibrary(target=build_dir + 'bot.dll', source=project_objects)
 dll_env.Alias('dll', build_dir + 'bot.dll')
-
-
-	
-
