@@ -146,12 +146,12 @@ before_install:
     fi
 
 install:
+  - pip install --upgrade pip
   - |
     if [[ "${STATISTICS}" == "1" ]]; then
-      pip install --upgrade pip
       pip install --user cpp-coveralls
-      pip install -r requirements.txt
     fi
+  - pip install -r requirements.txt
 
 before_script: true
 
