@@ -37,6 +37,8 @@ void OnDeinit(const int reason) {
 
 /* New Data to Analyse ------------------------------------------------------ */
 void OnTick() {
+	/* Sync data */
+	sync();
 }
 
 /**
@@ -48,4 +50,11 @@ int stringToReference(string s) {
 		stringAddChar(ref, s[i]);
 	}
 	return ref;
+}
+
+/**
+ * Ensure the buffers in the robot at least match that of this expert.
+ */
+void sync() {
+
 }
