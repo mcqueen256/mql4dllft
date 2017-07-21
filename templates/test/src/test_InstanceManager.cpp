@@ -3,6 +3,7 @@
 #include "catch.hpp"
 
 #include "RobotReferenceType.hpp"
+#include "InstanceManager.hpp"
 #include "export.hpp"
 #include "mql.hpp"
 

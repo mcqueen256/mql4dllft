@@ -1,10 +1,14 @@
 #ifndef ROBOT_HPP
 #define ROBOT_HPP
 
-class Robot {
+#include <string>
+
+#include "BaseRobot.hpp"
+
+class Robot : public BaseRobot{
 private:
 public:
-	Robot();
+	Robot(std::string name);
 	~Robot();
 };
 

@@ -1,5 +1,7 @@
 #include "export.hpp"
 #include "RobotReferenceType.hpp"
+#include "InstanceManager.hpp"
+#include "Robot.hpp"
 
 extern "C" {
 	/*
@@ -7,7 +9,7 @@ extern "C" {
 	 */
 	MT4_API RobotReferenceType initialise(int robot_name_ref) {
 		std::string robot_name = InstanceManager::stringGet(robot_name_ref);
-		BaseRobot* robot = new BaseRobot(robot_name);
+		Robot* robot = new Robot(robot_name);
 		InstanceManager::push(robot);
 		return reinterpret_cast<RobotReferenceType>(robot);
 	}

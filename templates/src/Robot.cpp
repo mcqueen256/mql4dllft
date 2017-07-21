@@ -1,6 +1,9 @@
 #include "Robot.hpp"
+#include "BaseRobot.hpp"
 
-Robot::Robot() {
+#include <string>
+
+Robot::Robot(std::string name) : BaseRobot(name) {
 
 }
 
