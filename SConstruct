@@ -3,27 +3,29 @@ windows = lambda: platform.system().lower() == 'windows'
 linux = lambda: 'linux' in platform.system().lower()
 osx = lambda: platform.system().lower() == 'darwin'
 
-project_env = Environment()
+project_env = Environment(TARGET_ARCH='x86')
 if windows():
-	CXXFLAGS='/std:c++11 /Ob /EHsc /I.\\include\\'
+	CXXFLAGS='/EHsc /I.\\include\\'
+	if 'dll' in COMMAND_LINE_TARGETS:
+		CXXFLAGS += ' /DPRODUCTION'
 elif linux():
 	CXXFLAGS='-g -O0 -fprofile-arcs -ftest-coverage -std=c++11 -Wall -pedantic -I./include/'
 elif osx():
 	CXXFLAGS='-g -O0 -std=c++11 -Wall -pedantic -I./include/'
 project_env.Append(CXXFLAGS=CXXFLAGS)
 
-test_env = Environment()
+test_env = Environment(TARGET_ARCH='x86')
 if windows():
-	CXXFLAGS='/std:c++11 /Ob /EHsc /I.\\include\\ /I.\\test\\include\\'
+	CXXFLAGS='/EHsc /I.\\include\\ /I.\\test\\include\\'
 elif linux():
 	CXXFLAGS='-g -O0 -fprofile-arcs -ftest-coverage -std=c++11 -Wall -pedantic -I./include/ -I./test/include/'
 elif osx():
 	CXXFLAGS='-g -O0 -std=c++11 -Wall -pedantic -I./include/ -I./test/include/'
 test_env.Append(CXXFLAGS=CXXFLAGS)
 
-program_env = Environment()
+program_env = Environment(TARGET_ARCH='x86')
 if windows():
-	CXXFLAGS='/std:c++11 /Ob /EHsc -I./test/include/'
+	CXXFLAGS='/EHsc -I./test/include/'
 	LINKFLAGS=''
 elif linux():
 	CXXFLAGS='-std=c++11 -O0 -I./test/include/'
@@ -65,8 +67,8 @@ main_test_object = program_env.Object(target='test', source=['test.cpp'], srcdir
 main_test_program = program_env.Program(target=build_dir + 'mql4dllft', source=main_test_object + case_test_objects + project_objects, srcdir=test_dir)
 Default(main_test_program)
 
-dll_env = Environment()
-CXXFLAGS='/std:c++11 /EHsc /D_USRDLL /D_WINDLL -I./test/include/ -DPRODUCTION'
+dll_env = Environment(TARGET_ARCH='x86')
+CXXFLAGS='/EHsc /D_USRDLL /D_WINDLL -I./test/include/ /DPRODUCTION'
 dll_env.Append(CXXFLAGS=CXXFLAGS)
 dll_env.SharedLibrary(target=build_dir + 'bot.dll', source=project_objects)
 dll_env.Alias('dll', build_dir + 'bot.dll')

@@ -20,7 +20,7 @@
 #endif
 
 /* Macros ------------------------------------------------------------------- */
-#ifdef NDEBUG
+#ifdef PRODUCTION
 #define MT4_API __declspec(dllexport)
 #else
 #define MT4_API 
