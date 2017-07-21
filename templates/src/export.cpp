@@ -5,8 +5,9 @@ extern "C" {
 	/*
 	 * Note: MQL calls are not available until after this function returns.
 	 */
-	MT4_API RobotReferenceType initialise(int name_uid) {
-		BaseRobot* robot = new BaseRobot();
+	MT4_API RobotReferenceType initialise(int robot_name_ref) {
+		std::string robot_name = InstanceManager::stringGet(robot_name_ref);
+		BaseRobot* robot = new BaseRobot(robot_name);
 		InstanceManager::push(robot);
 		return reinterpret_cast<RobotReferenceType>(robot);
 	}
@@ -22,8 +23,8 @@ extern "C" {
     	return InstanceManager::stringNewReference();
     }
 
-    MT4_API void stringAddChar(int uid, char c) {
-    	InstanceManager::stringAddChar(uid, c);
+    MT4_API void stringAddChar(int ref, char c) {
+    	InstanceManager::stringAddChar(ref, c);
     }
 
 }

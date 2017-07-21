@@ -6,27 +6,43 @@
 #include "export.hpp"
 #include "mql.hpp"
 
+int stringToReference(std::string s) {
+	int ref = createStringReference();
+	for (auto c: s) {
+		stringAddChar(ref, c);
+	}
+	return ref;
+}
+
 TEST_CASE( "Initialisation", "[InstanceManager]" ) {
+	// settings
+	std::string robot_name = "r1";
+	//Init
 	RobotReferenceType instance = 0;
 	REQUIRE( instance == 0);
-	instance = initialise(0);
+	int robot_name_ref = stringToReference(robot_name);
+	instance = initialise(robot_name_ref);
 	REQUIRE( instance != 0);
+	REQUIRE( InstanceManager::stringAt(robot_name_ref) == false );
 	REQUIRE_NOTHROW([&instance](){
 		deinitialise(instance, static_cast<unsigned>(mql::REASON::PROGRAM));
 	});
 }
 
 TEST_CASE( "de-initialisation", "[InstanceManager]" ) {
-
+	// settings
+	std::string robot_name = "r1";
+	//Init
+	int robot_name_ref = stringToReference(robot_name);
 	SECTION("Expert Advisor terminated its operation by calling the ExpertRemove() function") {
-		RobotReferenceType ref = initialise(0);
+		RobotReferenceType ref = initialise(robot_name_ref);
 		REQUIRE_NOTHROW([&ref](){
 			deinitialise(ref, static_cast<unsigned>(mql::REASON::PROGRAM));
 		});
 	}
 
 	SECTION("Double de-initialisation") {
-		RobotReferenceType ref = initialise(0);
+		RobotReferenceType ref = initialise(robot_name_ref);
 		REQUIRE_NOTHROW([&ref](){
 			deinitialise(ref, static_cast<unsigned>(mql::REASON::PROGRAM));
 		});

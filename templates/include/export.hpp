@@ -31,9 +31,9 @@ extern "C" {
 	/*
 	 * Note: MQL calls are not available until after this function returns.
 	 */
-	MT4_API RobotReferenceType initialise(int name_uid);
+	MT4_API RobotReferenceType initialise(int robot_name_ref);
 	MT4_API void deinitialise(RobotReferenceType instance, const int reason);
     MT4_API int createStringReference();
-    MT4_API void stringAddChar(int UID, char c);
+    MT4_API void stringAddChar(int ref, char c);
 }
 #endif

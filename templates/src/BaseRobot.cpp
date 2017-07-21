@@ -1,3 +1,5 @@
+#include <string>
+
 #include "BaseRobot.hpp"
 
 /*
@@ -10,7 +12,7 @@
 /**
  *
  */
-BaseRobot::BaseRobot() {
+BaseRobot::BaseRobot(std::string robot_name) {
 
 }
 

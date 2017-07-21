@@ -16,17 +16,18 @@ RobotReferenceType robot_instance;
 /* Libraries ---------------------------------------------------------------- */
 /* DLL Functions ----------------------------------------------------------- */
 #import "{{ name }}.dll"
-RobotReferenceType initialise(uchar &robot_name[]);
+RobotReferenceType initialise(int robot_name_ref);
 void deinitialise(RobotReferenceType instance, const int reason);
+int createStringReference();
+void stringAddChar(int ref, char c);
 
 #import
 
 /* Initialisation ----------------------------------------------------------- */
 int OnInit() {
 	/* Send settings to the dll */
-	uchar robot_name_uchar_array[];
-	StringToCharArray( robot_name, robot_name_uchar_array );
-	robot_instance = initialise( robot_name_uchar_array );
+	int robot_name_ref = stringToReference(robot_name);
+	robot_instance = initialise(robot_name_ref);
 	return( INIT_SUCCEEDED );
 }
 
@@ -36,4 +37,15 @@ void OnDeinit(const int reason) {
 
 /* New Data to Analyse ------------------------------------------------------ */
 void OnTick() {
+}
+
+/**
+ * Puts the string in the DLL and returns a reference to the string.
+ */
+int stringToReference(string s) {
+	int ref = createStringReference();
+	for (int i=0; i<StringBufferLen(s); i++) {
+		stringAddChar(ref, s[i]);
+	}
+	return ref;
 }
