@@ -1,15 +1,5 @@
 import click, os, json, jinja2
 
-@click.group(invoke_without_command=True)
-@click.pass_context
-def cli(ctx):
-    """"""
-    # if there is no command, generate everything
-    if ctx.invoked_subcommand is None:
-        cpp()
-        expert()
-        indicators()
-
 def properties():
     """Returns the decoded form of 'properties.json.'"""
     with open('properties.json', 'r') as fin:
@@ -48,21 +38,47 @@ def convert(srcdir, destdir, extention='.cpp'):
                 fout.write(template.render(**properties()))
                 click.echo('generator: {} -> {}'.format(srcdir + file_name, destdir + file_name))
 
-@cli.command('cpp')
 def cpp():
     # gather list of files
     convert('templates/src/', 'src/')
     convert('templates/include/', 'include/', extention='.hpp')
     convert('templates/test/src/', 'test/src/')
 
-@cli.command('expert')
 def expert():
     convert('templates/expert/', 'build/')
 
-@cli.command('indicators')
 def indicators():
-    convert('templates/indicator/', 'build/')
+    convert('templates/indicators/', 'build/')
 
+def export():
+    convert('templates/export/', './', extention='.bat')
+
+@click.group(invoke_without_command=True)
+@click.pass_context
+def cli(ctx):
+    """"""
+    # if there is no command, generate everything
+    if ctx.invoked_subcommand is None:
+        cpp()
+        expert()
+        indicators()
+        export()
+
+@cli.command('cpp')
+def cli_cpp():
+    expert()
+
+@cli.command('expert')
+def cli_expert():
+    expert()
+
+@cli.command('indicators')
+def cli_indicators():
+    indicators()
+
+@cli.command('export')
+def cli_export():
+    export()
 
 if __name__ == '__main__':
     cli()

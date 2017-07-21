@@ -9,7 +9,7 @@
 TEST_CASE( "Initialisation", "[InstanceManager]" ) {
 	RobotReferenceType instance = 0;
 	REQUIRE( instance == 0);
-	instance = initialise();
+	instance = initialise(0);
 	REQUIRE( instance != 0);
 	REQUIRE_NOTHROW([&instance](){
 		deinitialise(instance, static_cast<unsigned>(mql::REASON::PROGRAM));
@@ -19,77 +19,14 @@ TEST_CASE( "Initialisation", "[InstanceManager]" ) {
 TEST_CASE( "de-initialisation", "[InstanceManager]" ) {
 
 	SECTION("Expert Advisor terminated its operation by calling the ExpertRemove() function") {
-		RobotReferenceType ref = initialise();
+		RobotReferenceType ref = initialise(0);
 		REQUIRE_NOTHROW([&ref](){
 			deinitialise(ref, static_cast<unsigned>(mql::REASON::PROGRAM));
 		});
 	}
 
-	SECTION("Program has been deleted from the chart") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::REMOVE));
-		});
-	}
-
-	SECTION("Program has been recompiled") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::RECOMPILE));
-		});
-	}
-
-	SECTION("Symbol or chart period has been changed") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::CHARTCHANGE));
-		});
-	}
-
-	SECTION("Chart has been closed") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::CHARTCLOSE));
-		});
-	}
-
-	SECTION("Input parameters have been changed by a user") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::PARAMETERS));
-		});
-	}
-
-	SECTION("Another account has been activated or reconnection to the trade server has occurred due to changes in the account settings") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::ACCOUNT));
-		});
-	}
-
-	SECTION("A new template has been applied") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::TEMPLATE));
-		});
-	}
-
-	SECTION("This value means that OnInit() handler has returned a nonzero value") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::INITFAILED));
-		});
-	}
-
-	SECTION("Terminal has been closed") {
-		RobotReferenceType ref = initialise();
-		REQUIRE_NOTHROW([&ref](){
-			deinitialise(ref, static_cast<unsigned>(mql::REASON::CLOSE));
-		});
-	}
-
 	SECTION("Double de-initialisation") {
-		RobotReferenceType ref = initialise();
+		RobotReferenceType ref = initialise(0);
 		REQUIRE_NOTHROW([&ref](){
 			deinitialise(ref, static_cast<unsigned>(mql::REASON::PROGRAM));
 		});
@@ -100,3 +37,30 @@ TEST_CASE( "de-initialisation", "[InstanceManager]" ) {
 	}
 
 }
+
+TEST_CASE( "String handling", "[InstanceManager]" ) {
+	SECTION("Close access test") {
+		std::string s = "this is the string";
+		int ref = InstanceManager::stringNewReference();
+		REQUIRE( InstanceManager::stringAt(ref) == true );
+		for (auto c : s) {
+			InstanceManager::stringAddChar(ref, c);
+		}
+		std::string t = InstanceManager::stringGet(ref);
+		REQUIRE( InstanceManager::stringAt(ref) == false );
+		REQUIRE( t == s );
+	}
+
+	SECTION("As if mql") {
+		std::string s = "this is the string";
+
+		int ref = createStringReference();
+		for (auto c : s) {
+			stringAddChar(ref, c);
+		}
+		std::string t = InstanceManager::stringGet(ref);
+		REQUIRE( t == s );
+	}
+}
+
+
